@@ -13,7 +13,7 @@ export default function AddPatient() {
     age: "",
     address: "",
   });
-
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,18 +31,17 @@ export default function AddPatient() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
 
     const validationError = validate();
     if (validationError) return toast.error(validationError);
 
+    setLoading(true);
     try {
       const response = await axios.post(
         `${BASE_URL}/api/patients/add-patient`,
         form
       );
-      toast.success('Patient added successfully!');
-
+      toast.success("Patient added successfully!");
       setForm({
         name: "",
         phone: "",
@@ -52,81 +51,36 @@ export default function AddPatient() {
         address: "",
       });
     } catch (err) {
-        console.log(err)
-      toast.error(err.response?.data?.error || 'Failed to add patient');
+      console.log(err);
+      toast.error(err.response?.data?.error || "Failed to add patient");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="patient-form-container">
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{}}
-        toastOptions={{
-          // Define default options
-          className: "",
-          duration: 5000,
-          removeDelay: 1000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-
-          // Default options for specific types
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: "green",
-              secondary: "black",
-            },
-          },
-        }}
-      />
-
+      <Toaster position="top-right" />
       <h2 className="form-title">Add New Patient</h2>
       <form onSubmit={handleSubmit} className="patient-form">
-        <input
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-        />
-        <input
-          name="phone"
-          placeholder="Phone (10 digits)"
-          value={form.phone}
-          onChange={handleChange}
-        />
-        <input
-          name="aadharNo"
-          placeholder="Aadhar Number (12 digits)"
-          value={form.aadharNo}
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} />
+        <input name="phone" placeholder="Phone (10 digits)" value={form.phone} onChange={handleChange} />
+        <input name="aadharNo" placeholder="Aadhar Number (12 digits)" value={form.aadharNo} onChange={handleChange} />
         <select name="gender" value={form.gender} onChange={handleChange}>
           <option value="">Select Gender</option>
           <option>Male</option>
           <option>Female</option>
           <option>Other</option>
         </select>
-        <input
-          name="age"
-          type="number"
-          placeholder="Age"
-          value={form.age}
-          onChange={handleChange}
-        />
-        <textarea
-          name="address"
-          placeholder="Address"
-          value={form.address}
-          onChange={handleChange}
-          rows="3"
-        />
-        <button type="submit">Add Patient</button>
+        <input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} />
+        <textarea name="address" placeholder="Address" value={form.address} onChange={handleChange} rows="3" />
+        <button type="submit" disabled={loading}>
+          {loading ? (
+            <span className="spinner"></span>
+          ) : (
+            "Add Patient"
+          )}
+        </button>
       </form>
     </div>
   );

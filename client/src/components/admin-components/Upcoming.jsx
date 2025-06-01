@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BASE_URL from "../config";
-import "./Upcoming.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Upcoming() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUpcomingVisits = async () => {
@@ -36,7 +37,10 @@ export default function Upcoming() {
           <div className="checkedin-card">No upcoming visits found.</div>
         ) : (
           visits.map((visit) => (
-            <div className="checkedin-card" key={visit._id}>
+            <div className="checkedin-card" key={visit._id} 
+               onClick={() =>
+                navigate(`/admin-home/patient/${visit.patientId?._id}`)
+              }>
               <p><strong>Name:</strong> {visit.patientId?.name || "Unknown"}</p>
               <p><strong>Phone:</strong> {visit.patientId?.phone || "N/A"}</p>
               <p><strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}</p>

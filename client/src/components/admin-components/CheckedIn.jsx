@@ -3,6 +3,7 @@ import axios from "axios";
 import BASE_URL from "../config";
 import "./CheckedIn.css";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../Loader";
 
 export default function AllActiveInpatients() {
   const [patients, setPatients] = useState([]);
@@ -38,7 +39,7 @@ export default function AllActiveInpatients() {
       .includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="checkedin-card">Loading...</div>;
+  if (loading) return <div><Loader/></div>;
 
   if (filteredPatients.length === 0)
     return (

@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
 
 export default function VisitHistory({ visits }) {
+  const [loadingVisitId, setLoadingVisitId] = useState(null);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(null); // visitId or null
+  const [nextVisitDate, setNextVisitDate] = useState("");
+
   const handleCheckOut = async (visitId) => {
-    const nextVisit = prompt(
-      "Enter Next Visit Date (YYYY-MM-DD or leave blank):"
-    );
+    setLoadingVisitId(visitId);
     try {
       await axios.put(
         `${BASE_URL}/api/visits/checkout/${visitId}`,
-        { nextVisit: nextVisit || null },
+        { nextVisit: nextVisitDate || null },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -20,6 +22,10 @@ export default function VisitHistory({ visits }) {
       window.location.reload();
     } catch {
       toast.error("Failed to check out");
+    } finally {
+      setLoadingVisitId(null);
+      setShowCheckoutModal(null);
+      setNextVisitDate("");
     }
   };
 
@@ -32,42 +38,57 @@ export default function VisitHistory({ visits }) {
         <div className="visit-history">
           {visits.map((visit) => (
             <div key={visit._id} className="visit-card">
-              <p>
-                <strong>Type:</strong> {visit.type}
-              </p>
-              <p>
-                <strong>Reason:</strong> {visit.reason}
-              </p>
-              <p>
-                <strong>Note:</strong> {visit.note}
-              </p>
-              <p>
-                <strong>Check-In:</strong>{" "}
-                {visit.checkInTime
-                  ? new Date(visit.checkInTime).toLocaleString()
-                  : "Not Joined"}
-              </p>
-
-              <p>
-                <strong>Check-Out:</strong>{" "}
-                {visit.checkOutTime
-                  ? new Date(visit.checkOutTime).toLocaleString()
-                  : "Not yet"}
-              </p>
+              <p><strong>Type:</strong> {visit.type}</p>
+              <p><strong>Reason:</strong> {visit.reason}</p>
+              <p><strong>Note:</strong> {visit.note}</p>
+              <p><strong>Check-In:</strong> {visit.checkInTime ? new Date(visit.checkInTime).toLocaleString() : "Not Joined"}</p>
+              <p><strong>Check-Out:</strong> {visit.checkOutTime ? new Date(visit.checkOutTime).toLocaleString() : "Not yet"}</p>
               <p className="next-visit">
                 <strong>Next Visit:</strong>{" "}
-                {visit.nextVisit
-                  ? new Date(visit.nextVisit).toLocaleDateString()
-                  : "Not set"}
+                {visit.nextVisit ? new Date(visit.nextVisit).toLocaleDateString() : "Not set"}
               </p>
 
               {!visit.checkOutTime && visit.checkInTime && (
                 <button
                   className="checkout-button"
-                  onClick={() => handleCheckOut(visit._id)}
+                  onClick={() => setShowCheckoutModal(visit._id)}
                 >
-                  Check Out
+                  Checkout
                 </button>
+              )}
+
+              {showCheckoutModal === visit._id && (
+                <div className="modal-overlay">
+                  <div className="popup-modal">
+                    <h3>Confirm Checkout</h3>
+                    <p>Enter next visit date (optional):</p>
+                    <input
+                      type="date"
+                      value={nextVisitDate}
+                      onChange={(e) => setNextVisitDate(e.target.value)}
+                      className="date-input"
+                    />
+                    <div className="modal-buttons">
+                      <button
+                        className="edit-button"
+                        onClick={() => {
+                          setShowCheckoutModal(null);
+                          setNextVisitDate("");
+                        }}
+                        disabled={loadingVisitId === visit._id}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="checkout-button"
+                        onClick={() => handleCheckOut(visit._id)}
+                        disabled={loadingVisitId === visit._id}
+                      >
+                        {loadingVisitId === visit._id ? "Checking out..." : "Confirm"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           ))}

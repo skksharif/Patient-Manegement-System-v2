@@ -1,58 +1,80 @@
+/* Page Container */
 .checkedout-list {
-  padding: 20px 0;
+  padding: 40px 20px;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-y: hidden;
 }
 
+/* Heading */
 .checkedout-list h2 {
   text-align: center;
-  color: #26a200;
-  margin-bottom: 30px;
+  color: #2e7d32;
+  margin-bottom: 10px;
   text-decoration: underline;
+  font-size: 26px;
+  font-weight: 700;
 }
 
-.checkedout-search {
+/* Search Input */
+.search-input {
   display: block;
-  margin: 0 auto 30px auto;
-  padding: 10px;
-  width: 280px;
+  margin: 0 auto 10px;
+  padding: 12px 18px;
+  width: 320px;
   font-size: 16px;
-  border: 2px solid #26a200;
-  border-radius: 6px;
+  border: 1px solid #a5d6a7;
+  border-radius: 8px;
   outline: none;
+  transition: 0.3s;
 }
 
-.checkedout-search:focus {
-  border-color: #0d47a1;
-  box-shadow: 0 0 5px rgba(13, 71, 161, 0.4);
+.search-input:focus {
+  border-color: #388e3c;
+  box-shadow: 0 0 0 3px #c8e6c9;
 }
 
+/* Cards Container */
 .checkedout-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  height: 75vh;
-  overflow-y: scroll;
+  justify-content: space-around; /* or space-evenly for symmetry */
+  align-items: flex-start;
+  gap: 20px; /* spacing between cards */
+  padding: 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+  border: 2px solid #aed581;
+  border-radius: 12px;
+  background-color: #ffffff78;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Make card responsive */
 .checkedout-card {
-  background-color: #fdfeff;
-  border-left: 5px solid #26a200;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
-  border-radius: 8px;
-  width: 300px;
+  flex: 1 1 280px; /* grow, shrink, base-width */
+  max-width: 300px;
+  background-color: #e8f5e9;
+  border-left: 6px solid #2e7d32;
+  padding: 18px 22px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: 0.2s ease;
 }
+
 
 .checkedout-card:hover {
-  transform: scale(1.03);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.2);
 }
 
+/* Card Text */
 .checkedout-card p {
-  margin: 5px 0;
-  color: #26a200;
+  margin: 6px 0;
+  color: #2e7d32;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
 }

@@ -3,6 +3,7 @@ import axios from "axios";
 import BASE_URL from "../config";
 import "./Checkedout.css";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../Loader";
 
 export default function Checkedout() {
   const [visits, setVisits] = useState([]);
@@ -38,7 +39,7 @@ export default function Checkedout() {
 
 
 
-  if (loading) return <div className="checkedout-card">Loading...</div>;
+  if (loading) return <div><Loader /></div>;
 
   return (
     <div className="checkedout-list">
@@ -48,7 +49,7 @@ export default function Checkedout() {
         placeholder="Search by Aadhar No"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="checkedout-search"
+        className="search-input"
       />
       <div className="checkedout-container">
         {filteredVisits.length === 0 ? (
@@ -63,11 +64,9 @@ export default function Checkedout() {
               }
             >
               <p><strong>Name:</strong> {visit.patientId?.name || "Unknown"}</p>
-              <p><strong>Phone:</strong> {visit.patientId?.phone}</p>
               <p><strong>Aadhar No:</strong> {visit.patientId?.aadharNo}</p>
               <p><strong>Check-In:</strong> {new Date(visit.checkInTime).toLocaleString()}</p>
               <p><strong>Check-Out:</strong> {new Date(visit.checkOutTime).toLocaleString()}</p>
-              <p><strong>Next Visit:</strong> {visit.nextVisit ? new Date(visit.nextVisit).toLocaleDateString() : "N/A"}</p>
             </div>
           ))
         )}

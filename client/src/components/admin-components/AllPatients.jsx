@@ -4,10 +4,12 @@ import "./AllPatients.css";
 import BASE_URL from "../config";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../Loader";
 
 export default function AllPatients() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +19,8 @@ export default function AllPatients() {
         setPatients(response.data);
       } catch (error) {
         toast.error("Failed to fetch patients");
+      } finally {
+        setLoading(false);
       }
     };
     fetchPatients();
@@ -38,19 +42,23 @@ export default function AllPatients() {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <div className="patient-cards">
-        {filteredPatients.map((patient) => (
-          <div
-            key={patient._id}
-            className="patient-card"
-            onClick={() => navigate(`/admin-home/patient/${patient._id}`)}
-          >
-            <h3>{patient.name}</h3>
-            <p><strong>Phone:</strong> {patient.phone}</p>
-            <p><strong>Aadhar:</strong> {patient.aadharNo}</p>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="patient-cards"><Loader/></div>
+      ) : (
+        <div className="patient-cards">
+          {filteredPatients.map((patient) => (
+            <div
+              key={patient._id}
+              className="patient-card"
+              onClick={() => navigate(`/admin-home/patient/${patient._id}`)}
+            >
+              <h3>{patient.name}</h3>
+              <p><strong>Phone:</strong> {patient.phone}</p>
+              <p><strong>Aadhar:</strong> {patient.aadharNo}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

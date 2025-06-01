@@ -1,45 +1,80 @@
+/* Page Container */
 .checkedin-list {
-  padding: 20px 0;
+  padding: 40px 20px;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-y: hidden;
 }
 
+/* Heading */
 .checkedin-list h2 {
   text-align: center;
   color: #2e7d32;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   text-decoration: underline;
-}
-.checkedin-container{
-  height: 80vh;
-  overflow-y: scroll;
+  font-size: 26px;
+  font-weight: 700;
 }
 
-.checkedin-card {
-  background-color: #e8f5e9;
-  border-left: 5px solid #2e7d32;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
+/* Search Input */
+.search-input {
+  display: block;
+  margin: 0 auto 10px;
+  padding: 12px 18px;
+  width: 320px;
+  font-size: 16px;
+  border: 1px solid #a5d6a7;
   border-radius: 8px;
-  width: 280px;
-  height: fit-content;
-  margin: 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  outline: none;
+  transition: 0.3s;
 }
 
-.checkedin-card:hover {
-  transform: scale(1.03);
+.search-input:focus {
+  border-color: #388e3c;
+  box-shadow: 0 0 0 3px #c8e6c9;
 }
 
-.checkedin-card p {
-  margin: 5px 0;
-  color: #2e7d32;
-}
-
+/* Cards Container */
 .checkedin-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  justify-content: space-around; /* or space-evenly for symmetry */
+  align-items: flex-start;
+  gap: 20px; /* spacing between cards */
+  padding: 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+  border: 2px solid #aed581;
+  border-radius: 12px;
+  background-color: #ffffff78;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Make card responsive */
+.checkedin-card {
+  flex: 1 1 280px; /* grow, shrink, base-width */
+  max-width: 300px;
+  background-color: #e8f5e9;
+  border-left: 6px solid #2e7d32;
+  padding: 18px 22px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+
+.checkedin-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.2);
+}
+
+/* Card Text */
+.checkedin-card p {
+  margin: 6px 0;
+  color: #2e7d32;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
 }
