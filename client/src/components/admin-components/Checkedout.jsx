@@ -37,9 +37,12 @@ export default function Checkedout() {
     visit.patientId?.aadharNo?.includes(search)
   );
 
-
-
-  if (loading) return <div><Loader /></div>;
+  if (loading)
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="checkedout-list">
@@ -53,20 +56,37 @@ export default function Checkedout() {
       />
       <div className="checkedout-container">
         {filteredVisits.length === 0 ? (
-          <div className="checkedout-card">No records found.</div>
+          <div
+            style={{
+              padding: "110px 0",
+              color: "red",
+            }}
+          >
+            No Records found.
+          </div>
         ) : (
           filteredVisits.map((visit) => (
             <div
               className="checkedout-card"
               key={visit._id}
-               onClick={() =>
+              onClick={() =>
                 navigate(`/admin-home/patient/${visit.patientId?._id}`)
               }
             >
-              <p><strong>Name:</strong> {visit.patientId?.name || "Unknown"}</p>
-              <p><strong>Aadhar No:</strong> {visit.patientId?.aadharNo}</p>
-              <p><strong>Check-In:</strong> {new Date(visit.checkInTime).toLocaleString()}</p>
-              <p><strong>Check-Out:</strong> {new Date(visit.checkOutTime).toLocaleString()}</p>
+              <p>
+                <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
+              </p>
+              <p>
+                <strong>Aadhar No:</strong> {visit.patientId?.aadharNo}
+              </p>
+              <p>
+                <strong>Check-In:</strong>{" "}
+                {new Date(visit.checkInTime).toLocaleString()}
+              </p>
+              <p>
+                <strong>Check-Out:</strong>{" "}
+                {new Date(visit.checkOutTime).toLocaleString()}
+              </p>
             </div>
           ))
         )}

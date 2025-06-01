@@ -43,7 +43,10 @@ export default function AllActiveInpatients() {
 
   if (filteredPatients.length === 0)
     return (
-      <div className="checkedin-card">No active in-patients found.</div>
+      <div style={{
+        padding:"110px 0",
+        color:"red"
+      }}>No active in-patients found.</div>
     );
 
   return (

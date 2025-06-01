@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BASE_URL from "../config";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../Loader";
 
 export default function Upcoming() {
   const [visits, setVisits] = useState([]);
@@ -27,14 +28,14 @@ export default function Upcoming() {
     fetchUpcomingVisits();
   }, []);
 
-  if (loading) return <div className="checkedin-card">Loading...</div>;
+  if (loading) return <div><Loader/></div>;
 
   return (
     <div className="checkedin-list">
       <h2>Upcoming Visits</h2>
       <div className="checkedin-container">
         {visits.length === 0 ? (
-          <div className="checkedin-card">No upcoming visits found.</div>
+          <div>No upcoming visits found.</div>
         ) : (
           visits.map((visit) => (
             <div className="checkedin-card" key={visit._id} 

@@ -1,12 +1,12 @@
-*{
+* {
   padding: 0;
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: "Outfit", sans-serif;
   box-sizing: border-box;
 }
-a{
+a {
   text-decoration: none;
 }
-body{
+body {
   overflow-x: hidden;
 }

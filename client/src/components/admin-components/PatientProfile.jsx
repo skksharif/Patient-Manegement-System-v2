@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import PatientDetails from "./PatientDetails";
 import VisitHistory from "./VisitHistory";
 import "./PatientProfile.css";
+import Loader from "../../Loader";
 
 export default function PatientProfile() {
   const { id } = useParams();
@@ -37,7 +38,7 @@ export default function PatientProfile() {
     fetchVisits();
   }, [id]);
 
-  if (!patient) return <div>Loading...</div>;
+  if (!patient) return <div><Loader/></div>;
 
   return (
     <div className="patient-profile-container">

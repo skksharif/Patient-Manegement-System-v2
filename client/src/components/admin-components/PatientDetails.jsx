@@ -22,6 +22,7 @@ export default function PatientDetails({
     note: "",
     nextVisit: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const hasActiveIP = visits.some((v) => v.type === "IP" && !v.checkOutTime);
   const latestVisit = visits[0];
@@ -54,6 +55,7 @@ export default function PatientDetails({
   };
 
   const handleSubmitModal = async () => {
+    setIsSubmitting(true);
     try {
       if (modalType === "visit") {
         await axios.post(
@@ -93,6 +95,8 @@ export default function PatientDetails({
       window.location.reload();
     } catch {
       toast.error("Action failed");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -252,9 +256,14 @@ export default function PatientDetails({
         )}
 
         <div style={{ marginTop: "10px" }}>
-          <button onClick={handleSubmitModal} className="save-button">
-            Submit
+          <button
+            onClick={handleSubmitModal}
+            className="save-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
+
           <button onClick={closeModal} className="edit-button">
             Cancel
           </button>
