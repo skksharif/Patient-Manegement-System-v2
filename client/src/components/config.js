@@ -1,4 +1,4 @@
 // src/config.js
-const BASE_URL = "https://patient-manegement-system-v2.onrender.com";
+const BASE_URL = "http://localhost:5000";
 /*https://patient-manegement-system-v2.onrender.com*/
 export default BASE_URL;

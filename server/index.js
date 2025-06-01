@@ -18,6 +18,7 @@ app.post('/',(req,res)=>{
     res.json({message : "Its Begining"});
 })
 
+app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/admin",adminRoutes);
 app.use("/api/patients",patientRoutes);
 app.use("/api/visits",visitRoutes);
