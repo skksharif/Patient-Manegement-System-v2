@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import BASE_URL from "../config";
 import "./Home.css";
+import Loader from "../../Loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -26,7 +27,9 @@ export default function Home() {
       .catch((err) => console.error("Error fetching stats:", err));
   }, []);
 
-  if (!stats || !stats.visitsPerDay) return <p className="loading">Loading Dashboard...</p>;
+  if (!stats || !stats.visitsPerDay) return <div>
+    <Loader/>
+  </div>;
 
   const barOptions = {
     responsive: true,

@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
+import DownloadPatientHistory from "./DownloadPatientHistory";
 
 // Required for accessibility
 Modal.setAppElement("#root");
@@ -181,6 +182,7 @@ export default function PatientDetails({
           {hasActiveIP && (
             <p className="status-info">Currently Admitted (IP)</p>
           )}
+          <DownloadPatientHistory patientId={patientId} />
         </>
       )}
 
