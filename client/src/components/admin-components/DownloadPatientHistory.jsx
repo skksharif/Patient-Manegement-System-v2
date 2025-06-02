@@ -50,7 +50,7 @@ const DownloadPatientHistory = ({ patientId }) => {
       // Header Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(20);
-      doc.text("Prakruthi Ashram", pageWidth / 2, 18, { align: "center" });
+      doc.text("Prakruthi Ashramam", pageWidth / 2, 18, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
