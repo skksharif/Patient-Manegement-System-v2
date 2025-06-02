@@ -41,6 +41,8 @@ export default function VisitHistory({ visits }) {
               <p><strong>Type:</strong> {visit.type}</p>
               <p><strong>Reason:</strong> {visit.reason}</p>
               <p><strong>Note:</strong> {visit.note}</p>
+              <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
+              <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
               <p><strong>Check-In:</strong> {visit.checkInTime ? new Date(visit.checkInTime).toLocaleString() : "Not Joined"}</p>
               <p><strong>Check-Out:</strong> {visit.checkOutTime ? new Date(visit.checkOutTime).toLocaleString() : "Not yet"}</p>
               <p className="next-visit">

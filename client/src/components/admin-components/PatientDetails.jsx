@@ -22,6 +22,8 @@ export default function PatientDetails({
     reason: "",
     note: "",
     nextVisit: "",
+    roomNo: "",
+    doctor: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,8 +32,16 @@ export default function PatientDetails({
 
   const openModal = (type) => {
     setModalType(type);
-    setModalData({ type: "", reason: "", note: "", nextVisit: "" });
+    setModalData({
+      type: "",
+      reason: "",
+      note: "",
+      nextVisit: "",
+      roomNo: "",
+      doctor: "",
+    });
   };
+
   const closeModal = () => setModalType(null);
 
   const handleInputChange = (e) => {
@@ -83,7 +93,13 @@ export default function PatientDetails({
       } else if (modalType === "promote") {
         await axios.post(
           `${BASE_URL}/api/visits/promote-ip`,
-          { patientId, reason: modalData.reason, note: modalData.note },
+          {
+            patientId,
+            reason: modalData.reason,
+            note: modalData.note,
+            roomNo: modalData.roomNo,
+            doctor: modalData.doctor,
+          },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -147,10 +163,6 @@ export default function PatientDetails({
             <p>
               <strong>Address:</strong> {patient.address}
             </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {new Date(patient.createdAt).toLocaleString()}
-            </p>
           </div>
 
           {!hasActiveIP && (
@@ -200,6 +212,7 @@ export default function PatientDetails({
             ? "Add Next Visit"
             : "Promote to Inpatient"}
         </h3>
+
         {modalType === "visit" && (
           <>
             <label>
@@ -216,6 +229,13 @@ export default function PatientDetails({
             </label>
             <input
               type="text"
+              name="doctor"
+              placeholder="Doctor Name"
+              value={modalData.doctor}
+              onChange={handleModalChange}
+            />
+            <input
+              type="text"
               name="reason"
               placeholder="Reason"
               value={modalData.reason}
@@ -230,12 +250,29 @@ export default function PatientDetails({
                 onChange={handleModalChange}
               ></textarea>
             </label>
+            {modalData.type === "IP" && (
+              <>
+                <input
+                  type="text"
+                  name="roomNo"
+                  placeholder="Room Number"
+                  value={modalData.roomNo}
+                  onChange={handleModalChange}
+                />
+              </>
+            )}
           </>
         )}
 
         {modalType === "nextVisit" && (
-          <input type="date" name="nextVisit" onChange={handleModalChange} />
+          <input
+            type="date"
+            name="nextVisit"
+            value={modalData.nextVisit}
+            onChange={handleModalChange}
+          />
         )}
+
         {modalType === "promote" && (
           <>
             <input
@@ -254,6 +291,20 @@ export default function PatientDetails({
                 onChange={handleModalChange}
               ></textarea>
             </label>
+            <input
+              type="text"
+              name="roomNo"
+              placeholder="Room Number"
+              value={modalData.roomNo}
+              onChange={handleModalChange}
+            />
+            <input
+              type="text"
+              name="doctor"
+              placeholder="Doctor Name"
+              value={modalData.doctor}
+              onChange={handleModalChange}
+            />
           </>
         )}
 
@@ -265,7 +316,6 @@ export default function PatientDetails({
           >
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
-
           <button onClick={closeModal} className="edit-button">
             Cancel
           </button>

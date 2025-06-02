@@ -28,6 +28,16 @@ const visitSchema = new mongoose.Schema({
     default: null,
   },
 
+  roomNo: {
+    type: String,
+    default: null,
+  },
+
+  doctor: {
+    type: String, // or use ObjectId if referencing a Doctor model
+    required: false,
+  },
+
   checkOutTime: {
     type: Date,
     default: null,
