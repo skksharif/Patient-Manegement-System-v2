@@ -6,7 +6,7 @@
 .dashboard-title {
   font-size: 28px;
   margin: 10px 0;
-  color: #2c3e50;
+  color: #3a4e2e; /* dark olive */
   font-weight: 700;
 }
 
@@ -14,6 +14,7 @@
   text-align: center;
   font-size: 20px;
   margin-top: 50px;
+  color: #556b2f; /* olive */
 }
 
 .cards-grid {
@@ -48,22 +49,22 @@
   margin: 0;
 }
 
-/* Gradients */
+/* Olive Gradient Themes */
 .gradient-green {
-  background: linear-gradient(135deg, #00b894, #55efc4);
+  background: linear-gradient(135deg, #556b2f); /* dark olive to light */
 }
 
 .gradient-blue {
-  background: linear-gradient(135deg, #0984e3, #74b9ff);
+  background: linear-gradient(135deg, #6b8e23); /* olive green variant */
 }
 
 .gradient-yellow {
-  background: linear-gradient(135deg, #e1b12c, #f6e58d);
-  color: #222;
+  background: linear-gradient(135deg, #b0b347); /* olive-yellow shade */
+  color: #2c2c1f; /* darker text for contrast */
 }
 
 .gradient-red {
-  background: linear-gradient(135deg, #d63031, #fab1a0);
+  background: linear-gradient(135deg, #808000, #cfd8b1); /* muted olive red replacement */
 }
 
 .charts-grid {
@@ -76,14 +77,14 @@
   max-width: 300px;
   max-height: 100%;
   height: fit-content;
-  background: #fff;
+  background: #f8fbe9; /* very light olive background */
   padding: 25px;
   border-radius: 14px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 18px rgba(85, 107, 47, 0.1); /* soft olive shadow */
 }
 
 .chart-box h4 {
   margin-bottom: 20px;
   font-size: 20px;
-  color: #2d3436;
+  color: #556b2f; /* olive text */
 }

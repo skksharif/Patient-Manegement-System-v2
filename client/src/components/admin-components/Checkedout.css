@@ -17,24 +17,6 @@
   font-weight: 700;
 }
 
-/* Search Input */
-.search-input {
-  display: block;
-  margin: 0 auto 10px;
-  padding: 12px 18px;
-  width: 320px;
-  font-size: 16px;
-  border: 1px solid #a5d6a7;
-  border-radius: 8px;
-  outline: none;
-  transition: 0.3s;
-}
-
-.search-input:focus {
-  border-color: #388e3c;
-  box-shadow: 0 0 0 3px #c8e6c9;
-}
-
 /* Cards Container */
 .checkedout-container {
   display: flex;

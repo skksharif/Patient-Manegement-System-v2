@@ -24,6 +24,7 @@ export default function PatientDetails({
     nextVisit: "",
     roomNo: "",
     doctor: "",
+    therepist: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,6 +40,7 @@ export default function PatientDetails({
       nextVisit: "",
       roomNo: "",
       doctor: "",
+      therapist: "",
     });
   };
 
@@ -99,6 +101,7 @@ export default function PatientDetails({
             note: modalData.note,
             roomNo: modalData.roomNo,
             doctor: modalData.doctor,
+            therapist: modalData.therapist,
           },
           {
             headers: {
@@ -192,7 +195,7 @@ export default function PatientDetails({
             </>
           )}
           {hasActiveIP && (
-            <p className="status-info">Currently Admitted (IP)</p>
+            <span className="status-info">Currently Admitted (IP)</span>
           )}
           <DownloadPatientHistory patientId={patientId} />
         </>
@@ -232,6 +235,13 @@ export default function PatientDetails({
               name="doctor"
               placeholder="Doctor Name"
               value={modalData.doctor}
+              onChange={handleModalChange}
+            />
+            <input
+              type="text"
+              name="therapist"
+              placeholder="Therapist Name"
+              value={modalData.therapist}
               onChange={handleModalChange}
             />
             <input
@@ -303,6 +313,13 @@ export default function PatientDetails({
               name="doctor"
               placeholder="Doctor Name"
               value={modalData.doctor}
+              onChange={handleModalChange}
+            />
+            <input
+              type="text"
+              name="therapist"
+              placeholder="Therapist Name"
+              value={modalData.therapist}
               onChange={handleModalChange}
             />
           </>

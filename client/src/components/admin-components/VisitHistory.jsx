@@ -38,26 +38,59 @@ export default function VisitHistory({ visits }) {
         <div className="visit-history">
           {visits.map((visit) => (
             <div key={visit._id} className="visit-card">
-              <p><strong>Type:</strong> {visit.type}</p>
-              <p><strong>Reason:</strong> {visit.reason}</p>
-              <p><strong>Note:</strong> {visit.note}</p>
-              <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
-              <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
-              <p><strong>Check-In:</strong> {visit.checkInTime ? new Date(visit.checkInTime).toLocaleString() : "Not Joined"}</p>
-              <p><strong>Check-Out:</strong> {visit.checkOutTime ? new Date(visit.checkOutTime).toLocaleString() : "Not yet"}</p>
-              <p className="next-visit">
-                <strong>Next Visit:</strong>{" "}
-                {visit.nextVisit ? new Date(visit.nextVisit).toLocaleDateString() : "Not set"}
-              </p>
+              <div className="visit-left">
+                <p>
+                  <strong>Type:</strong> {visit.type}
+                </p>
+                <p>
+                  <strong>Reason:</strong> {visit.reason}
+                </p>
+                <p>
+                  <strong>Note:</strong> {visit.note}
+                </p>
+                <p>
+                  <strong>Doctor:</strong> {visit.doctor || "Not Assigned"}
+                </p>
+                <p>
+                  <strong>Therapist:</strong> {visit.therapist || "Not Assigned"}
+                </p>
+              </div>
 
-              {!visit.checkOutTime && visit.checkInTime && (
-                <button
-                  className="checkout-button"
-                  onClick={() => setShowCheckoutModal(visit._id)}
-                >
-                  Checkout
-                </button>
-              )}
+              <div className="visit-right">
+                <p>
+                  <strong>Room No:</strong> {visit.roomNo || "Not Assigned"}
+                </p>
+                <p>
+                  <strong>Check-In:</strong>{" "}
+                  {visit.checkInTime
+                    ? new Date(visit.checkInTime).toLocaleString()
+                    : "Not Joined"}
+                </p>
+                <p>
+                  <strong>Check-Out:</strong>{" "}
+                  {visit.checkOutTime
+                    ? new Date(visit.checkOutTime).toLocaleString()
+                    : "Not yet"}
+                </p>
+                <p className="next-visit">
+                  <strong>Next Visit:</strong>{" "}
+                  {visit.nextVisit
+                    ? new Date(visit.nextVisit).toLocaleDateString()
+                    : "Not set"}
+                </p>
+
+                <p>
+                  {" "}
+                  {!visit.checkOutTime && visit.checkInTime && (
+                    <button
+                      className="checkout-button"
+                      onClick={() => setShowCheckoutModal(visit._id)}
+                    >
+                      Checkout
+                    </button>
+                  )}
+                </p>
+              </div>
 
               {showCheckoutModal === visit._id && (
                 <div className="modal-overlay">
@@ -86,7 +119,9 @@ export default function VisitHistory({ visits }) {
                         onClick={() => handleCheckOut(visit._id)}
                         disabled={loadingVisitId === visit._id}
                       >
-                        {loadingVisitId === visit._id ? "Checking out..." : "Confirm"}
+                        {loadingVisitId === visit._id
+                          ? "Checking out..."
+                          : "Confirm"}
                       </button>
                     </div>
                   </div>

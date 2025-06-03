@@ -65,12 +65,12 @@ export default function Home() {
   };
 
   const doughnutData = {
-    labels: ["OP Visits", "IP Visits"],
+    labels: ["IP Visits", "OP Visits"],
     datasets: [
       {
         label: "Visit Distribution",
         data: [stats.opCount, stats.ipCount],
-        backgroundColor: ["#0984e3", "#d63031"],
+        backgroundColor: ["green", "#556b2f"],
         borderColor: "#fff",
         borderWidth: 1,
         hoverOffset: 3,

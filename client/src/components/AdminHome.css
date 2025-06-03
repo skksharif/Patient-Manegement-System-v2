@@ -20,6 +20,11 @@
   text-align: center;
   margin-bottom: 20px;
 }
+.sidebar-header img{
+  width: 100%;
+  background-color: rgba(252, 237, 144, 0.959);
+  border-radius: 10px;
+}
 
 .sidebar-nav {
   display: flex;

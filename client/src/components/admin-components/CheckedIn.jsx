@@ -8,6 +8,7 @@ import Loader from "../../Loader";
 export default function AllActiveInpatients() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchBy, setSearchBy] = useState("aadhar");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -33,33 +34,57 @@ export default function AllActiveInpatients() {
     fetchActiveInpatients();
   }, []);
 
-  const filteredPatients = patients.filter((visit) =>
-    visit.patientId?.aadharNo
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredPatients = patients.filter((visit) => {
+    const patient = visit.patientId;
+    const term = searchTerm.toLowerCase();
 
-  if (loading) return <div><Loader/></div>;
+    if (!patient) return false;
+
+    if (searchBy === "aadhar")
+      return patient.aadharNo?.toLowerCase().includes(term);
+    if (searchBy === "phone")
+      return patient.phone?.toLowerCase().includes(term);
+    if (searchBy === "name") return patient.name?.toLowerCase().includes(term);
+
+    return false;
+  });
+
+  if (loading)
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
 
   if (filteredPatients.length === 0)
     return (
-      <div style={{
-        padding:"110px 0",
-        color:"red"
-      }}>No active in-patients found.</div>
+      <div style={{ padding: "110px 0", color: "red" }}>
+        No active in-patients found.
+      </div>
     );
 
   return (
     <div className="checkedin-list">
       <h2>All Active In-Patients</h2>
 
-      <input
-        type="text"
-        placeholder="Search by Aadhar number..."
-        className="search-input"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder={`Search by ${searchBy}...`}
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          className="search-select"
+          value={searchBy}
+          onChange={(e) => setSearchBy(e.target.value)}
+        >
+          <option value="aadhar">Aadhar</option>
+          <option value="phone">Phone</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
 
       <div className="checkedin-container">
         {filteredPatients.map((visit) => (
@@ -70,11 +95,25 @@ export default function AllActiveInpatients() {
               navigate(`/admin-home/patient/${visit.patientId?._id}`)
             }
           >
-            <p><strong>Name:</strong> {visit.patientId?.name || "Unknown"}</p>
-            <p><strong>Admitted On:</strong> {new Date(visit.createdAt).toLocaleDateString()}</p>
-            <p><strong>Check-In:</strong> {visit.checkInTime ? new Date(visit.checkInTime).toLocaleTimeString() : "Not Joined"}</p>
-            <p><strong>Phone:</strong> {visit.patientId?.phone || "N/A"}</p>
-            <p><strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}</p>
+            <p>
+              <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
+            </p>
+            <p>
+              <strong>Admitted On:</strong>{" "}
+              {new Date(visit.createdAt).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Check-In:</strong>{" "}
+              {visit.checkInTime
+                ? new Date(visit.checkInTime).toLocaleTimeString()
+                : "Not Joined"}
+            </p>
+            <p>
+              <strong>Phone:</strong> {visit.patientId?.phone || "N/A"}
+            </p>
+            <p>
+              <strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}
+            </p>
           </div>
         ))}
       </div>

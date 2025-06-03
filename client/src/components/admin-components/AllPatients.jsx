@@ -8,14 +8,17 @@ import Loader from "../../Loader";
 
 export default function AllPatients() {
   const [patients, setPatients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchBy, setSearchBy] = useState("aadhar");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/patients/all-patients`);
+        const response = await axios.get(
+          `${BASE_URL}/api/patients/all-patients`
+        );
         setPatients(response.data);
       } catch (error) {
         toast.error("Failed to fetch patients");
@@ -26,24 +29,42 @@ export default function AllPatients() {
     fetchPatients();
   }, []);
 
-  const filteredPatients = patients.filter((patient) =>
-    patient.aadharNo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPatients = patients.filter((patient) => {
+    const term = searchTerm.toLowerCase();
+    if (searchBy === "aadhar")
+      return patient.aadharNo.toLowerCase().includes(term);
+    if (searchBy === "phone") return patient.phone.toLowerCase().includes(term);
+    if (searchBy === "name") return patient.name.toLowerCase().includes(term);
+    return false;
+  });
 
   return (
     <div className="all-patients-container">
       <h2 className="title">All Patients</h2>
 
-      <input
-        type="text"
-        placeholder="Search by Aadhar number..."
-        className="search-input"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder={`Search by ${searchBy}...`}
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          className="search-select"
+          value={searchBy}
+          onChange={(e) => setSearchBy(e.target.value)}
+        >
+          <option value="aadhar">Aadhar</option>
+          <option value="phone">Phone</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
 
       {loading ? (
-        <div className="patient-cards"><Loader/></div>
+        <div className="patient-cards">
+          <Loader />
+        </div>
       ) : (
         <div className="patient-cards">
           {filteredPatients.map((patient) => (
@@ -53,8 +74,12 @@ export default function AllPatients() {
               onClick={() => navigate(`/admin-home/patient/${patient._id}`)}
             >
               <h3>{patient.name}</h3>
-              <p><strong>Phone:</strong> {patient.phone}</p>
-              <p><strong>Aadhar:</strong> {patient.aadharNo}</p>
+              <p>
+                <strong>Phone:</strong> {patient.phone}
+              </p>
+              <p>
+                <strong>Aadhar:</strong> {patient.aadharNo}
+              </p>
             </div>
           ))}
         </div>

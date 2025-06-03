@@ -5,7 +5,6 @@ import axios from "axios";
 import BASE_URL from "../config";
 import { FiDownload } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa";
-
 import "./DownloadPatientHistory.css";
 
 const DownloadPatientHistory = ({ patientId }) => {
@@ -14,51 +13,48 @@ const DownloadPatientHistory = ({ patientId }) => {
   const generatePDF = async () => {
     setLoading(true);
     try {
-      const patientRes = await axios.get(
-        `${BASE_URL}/api/patients/${patientId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const patientRes = await axios.get(`${BASE_URL}/api/patients/${patientId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       const patient = patientRes.data;
 
-      const visitRes = await axios.get(
-        `${BASE_URL}/api/visits/history/${patientId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const visitRes = await axios.get(`${BASE_URL}/api/visits/history/${patientId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       const visits = visitRes.data;
 
       const doc = new jsPDF("p", "mm", "a4");
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+      const oliveGreen = [46, 125, 50];
+      const accentOrange = [226, 131, 50];
+      const today = new Date().toLocaleDateString();
+      const logo = "/doc-logo.png";
 
-      // Border shadow effect
-      doc.setDrawColor(180);
-      doc.setLineWidth(0.2);
-      doc.rect(8, 8, pageWidth - 16, pageHeight - 16);
+      const addPageBorder = () => {
+        doc.setDrawColor(...oliveGreen);
+        doc.setLineWidth(0.8);
+        doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+      };
 
-      // Logo
-      const logo = "/doc-logo.png"; // logo should be in public folder
-      doc.addImage(logo, "PNG", 15, 10, 25, 25);
+      const addHeader = (firstPage = false) => {
+        addPageBorder();
+        if (firstPage) {
+          doc.addImage(logo, "PNG", 12, 12, 40, 16);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(14);
+          doc.setTextColor(...oliveGreen);
+          doc.text("CLIENT HISTORY", pageWidth / 2, 22, { align: "center" });
+        } else {
+          doc.addImage(logo, "PNG", 12, 12, 30, 12);
+        }
+        doc.setFontSize(9);
+        doc.setTextColor(80);
+        doc.text(`Date: ${today}`, pageWidth - 35, 16);
+      };
 
-      // Header Title
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      doc.text("Prakruthi Ashramam", pageWidth / 2, 18, { align: "center" });
+      addHeader(true);
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.text("Patient Visit History Report", pageWidth / 2, 26, {
-        align: "center",
-      });
-
-      // Patient Info Section
       const personalInfo = [
         ["Name", patient.name],
         ["Phone", patient.phone],
@@ -66,82 +62,118 @@ const DownloadPatientHistory = ({ patientId }) => {
         ["Gender", patient.gender],
         ["Age", patient.age],
         ["Address", patient.address],
-        ["Created At", new Date(patient.createdAt).toLocaleString()],
       ];
 
       autoTable(doc, {
-        startY: 36,
+        startY: 32,
         head: [["Patient Details", ""]],
         body: personalInfo,
-        theme: "plain",
+        theme: "grid",
         styles: {
-          fontSize: 11,
+          fontSize: 9,
+          cellPadding: 1,
           textColor: "#333",
           lineColor: "#ccc",
-          lineWidth: 0.1,
         },
         headStyles: {
           fontStyle: "bold",
-          fillColor: [220, 230, 241],
-          textColor: "#000",
+          fillColor: oliveGreen,
+          textColor: 255,
         },
         margin: { left: 14, right: 14 },
       });
 
-      // Visit Table
-      const visitData = visits.map((v, i) => [
-        i + 1,
-        v.type,
-        v.reason || "-",
-        v.note || "-",
-        v.doctor || "-",
-        v.roomNo || "-",
-        v.checkInTime ? new Date(v.checkInTime).toLocaleString() : "-",
-        v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : "-",
-        v.nextVisit ? new Date(v.nextVisit).toLocaleDateString() : "Not set",
-      ]);
+      let y = doc.lastAutoTable.finalY + 6;
+      const marginX = 14;
+      const lineHeight = 5;
+      const labelWidth = 30;
+      const valueWidth = (pageWidth - marginX * 2 - 8 - labelWidth * 2) / 2;
 
-      autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 8,
-        head: [
+      visits.forEach((v, i) => {
+        const leftFields = [
+          ["Type", v.type || "-"],
+          ["Doctor", v.doctor || "-"],
+          ["Therapist", v.therapist || "-"],
+          ["Reason", v.reason || "-"],
+          ...(v.note ? [["Note", v.note]] : []),
+        ];
+
+        const rightFields = [
+          ["Room", v.roomNo || "-"],
           [
-            "#",
-            "Type",
-            "Reason",
-            "Note",
-            "Doctor",
-            "Room No",
             "Check-In",
-            "Check-Out",
-            "Next Visit",
+            v.checkInTime ? new Date(v.checkInTime).toLocaleDateString() : "-",
           ],
-        ],
-        body: visitData,
-        theme: "striped",
-        styles: { fontSize: 10, cellPadding: 2.5 },
-        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 10, right: 10 },
+          [
+            "Check-Out",
+            v.checkOutTime ? new Date(v.checkOutTime).toLocaleDateString() : "-",
+          ],
+          [
+            "Next Visit",
+            v.nextVisit ? new Date(v.nextVisit).toLocaleDateString() : "Not set",
+          ],
+        ];
+
+        const numRows = Math.max(leftFields.length, rightFields.length);
+        const contentHeight = numRows * lineHeight + 10;
+
+        if (y + contentHeight > pageHeight - 20) {
+          doc.addPage();
+          addHeader(false);
+          y = 24;
+        }
+
+        doc.setFillColor(248, 248, 248);
+        doc.rect(marginX, y, pageWidth - marginX * 2, contentHeight, "F");
+
+        doc.setFillColor(...accentOrange);
+        doc.rect(marginX, y, pageWidth - marginX * 2, 6, "F");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(255);
+        doc.text(`Visit ${visits.length - i}`, marginX + 2, y + 4);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#000");
+
+        let rowY = y + 10;
+        for (let r = 0; r < numRows; r++) {
+          const left = leftFields[r];
+          const right = rightFields[r];
+
+          if (left) {
+            doc.text(`${left[0]}:`, marginX + 4, rowY);
+            doc.text(`${left[1]}`, marginX + 4 + labelWidth, rowY);
+          }
+
+          if (right) {
+            doc.text(`${right[0]}:`, marginX + 4 + labelWidth + valueWidth + 4, rowY);
+            doc.text(`${right[1]}`, marginX + 4 + labelWidth * 2 + valueWidth + 4, rowY);
+          }
+
+          rowY += lineHeight;
+        }
+
+        y += contentHeight + 2;
       });
 
-      // Footer on each page
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(9);
-        doc.setTextColor(100);
-        doc.text(`Page ${i} of ${pageCount}`, pageWidth - 20, pageHeight - 10);
-        doc.text(
-          "AIMS Hospital · Contact: 9876543210 · aims@example.com",
-          pageWidth / 2,
-          pageHeight - 10,
-          {
-            align: "center",
-          }
-        );
+      if (y + 12 > pageHeight - 20) {
+        doc.addPage();
+        addHeader(false);
+        y = 24;
       }
 
-      // Save
+      doc.setTextColor(...oliveGreen);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.text(
+        "Note: This is a digitally generated report and does not require a signature.",
+        marginX,
+        y + 8
+      );
+
       doc.save(`${patient.name}-VisitHistory.pdf`);
     } catch (error) {
       console.error("Failed to generate PDF:", error);

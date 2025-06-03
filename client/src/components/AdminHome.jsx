@@ -45,7 +45,7 @@ export default function AdminHome() {
           <aside className={`sidebar`}>
             <nav className="sidebar-nav">
               <div className="sidebar-header">
-                <h2>Prakruthi Ashram</h2>
+                <img src="/doc-logo.png" alt="" />
               </div>
 
               <NavLink
