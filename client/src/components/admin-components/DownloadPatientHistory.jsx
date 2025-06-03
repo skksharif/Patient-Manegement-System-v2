@@ -9,18 +9,42 @@ import "./DownloadPatientHistory.css";
 
 const DownloadPatientHistory = ({ patientId }) => {
   const [loading, setLoading] = useState(false);
+  function getTruncatedLines(doc, text, width, maxLines = 2) {
+    const lines = doc.splitTextToSize(text, width);
+    if (lines.length <= maxLines) return lines;
+
+    const truncated = lines.slice(0, maxLines);
+    const lastLine = truncated[truncated.length - 1];
+
+    // Add ellipsis to the last line
+    let shortened = lastLine;
+    while (
+      doc.getTextWidth(shortened + "...") > width &&
+      shortened.length > 0
+    ) {
+      shortened = shortened.slice(0, -1);
+    }
+    truncated[truncated.length - 1] = shortened + "...";
+    return truncated;
+  }
 
   const generatePDF = async () => {
     setLoading(true);
     try {
-      const patientRes = await axios.get(`${BASE_URL}/api/patients/${patientId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const patientRes = await axios.get(
+        `${BASE_URL}/api/patients/${patientId}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const patient = patientRes.data;
 
-      const visitRes = await axios.get(`${BASE_URL}/api/visits/history/${patientId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const visitRes = await axios.get(
+        `${BASE_URL}/api/visits/history/${patientId}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const visits = visitRes.data;
 
       const doc = new jsPDF("p", "mm", "a4");
@@ -106,11 +130,15 @@ const DownloadPatientHistory = ({ patientId }) => {
           ],
           [
             "Check-Out",
-            v.checkOutTime ? new Date(v.checkOutTime).toLocaleDateString() : "-",
+            v.checkOutTime
+              ? new Date(v.checkOutTime).toLocaleDateString()
+              : "-",
           ],
           [
             "Next Visit",
-            v.nextVisit ? new Date(v.nextVisit).toLocaleDateString() : "Not set",
+            v.nextVisit
+              ? new Date(v.nextVisit).toLocaleDateString()
+              : "Not set",
           ],
         ];
 
@@ -144,16 +172,30 @@ const DownloadPatientHistory = ({ patientId }) => {
           const right = rightFields[r];
 
           if (left) {
+            const leftLines = getTruncatedLines(doc, left[1], valueWidth);
             doc.text(`${left[0]}:`, marginX + 4, rowY);
-            doc.text(`${left[1]}`, marginX + 4 + labelWidth, rowY);
+            doc.text(leftLines, marginX + 4 + labelWidth, rowY);
           }
-
           if (right) {
-            doc.text(`${right[0]}:`, marginX + 4 + labelWidth + valueWidth + 4, rowY);
-            doc.text(`${right[1]}`, marginX + 4 + labelWidth * 2 + valueWidth + 4, rowY);
+            const rightLines = getTruncatedLines(doc, right[1], valueWidth);
+            doc.text(
+              `${right[0]}:`,
+              marginX + 4 + labelWidth + valueWidth + 4,
+              rowY
+            );
+            doc.text(
+              rightLines,
+              marginX + 4 + labelWidth * 2 + valueWidth + 4,
+              rowY
+            );
           }
 
-          rowY += lineHeight;
+          const rowHeight =
+            Math.max(
+              left ? getTruncatedLines(doc, left[1], valueWidth).length : 1,
+              right ? getTruncatedLines(doc, right[1], valueWidth).length : 1
+            ) * lineHeight;
+          rowY += rowHeight;
         }
 
         y += contentHeight + 2;
