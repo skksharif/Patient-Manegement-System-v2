@@ -37,6 +37,10 @@ const visitSchema = new mongoose.Schema({
     type: String, // or use ObjectId if referencing a Doctor model
     required: false,
   },
+  therapist: {
+    type: String, // or use ObjectId if referencing a Doctor model
+    required: false,
+  },
 
   checkOutTime: {
     type: Date,

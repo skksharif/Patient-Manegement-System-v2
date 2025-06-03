@@ -3,7 +3,7 @@ const Visit = require("../models/Visit");
 // 1. Create a visit (OP or IP)
 const createVisit = async (req, res) => {
   try {
-    const { patientId, type, reason, note, roomNo, doctor, nextVisit } = req.body;
+    const { patientId, type, reason, note, roomNo, doctor,therapist, nextVisit } = req.body;
 
     if (type === "IP") {
       const activeIP = await Visit.findOne({ patientId, type: "IP", checkOutTime: null });
@@ -20,6 +20,7 @@ const createVisit = async (req, res) => {
       note,
       roomNo,
       doctor,
+      therapist,
       checkInTime: type === "IP" ? new Date() : null,
       nextVisit: nextVisit ? new Date(nextVisit) : null,
     });
@@ -54,7 +55,7 @@ const checkoutVisit = async (req, res) => {
 // 3. Promote OP to IP (admit again)
 const promoteToInpatient = async (req, res) => {
   try {
-    const { patientId, reason, note, roomNo, doctor } = req.body;
+    const { patientId, reason, note, roomNo, doctor,therapist } = req.body;
 
     const existing = await Visit.findOne({
       patientId,
@@ -73,6 +74,7 @@ const promoteToInpatient = async (req, res) => {
       note,
       roomNo,
       doctor,
+      therapist,
       checkInTime: new Date(),
     });
 
