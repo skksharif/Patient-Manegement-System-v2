@@ -8,6 +8,7 @@ main {
 }
 main .hero-logo{
     max-width: 500px;
+    
 }
 main .login-btn{
     all: unset;
