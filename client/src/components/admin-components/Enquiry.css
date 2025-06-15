@@ -43,7 +43,7 @@
   font-size: 20px;
   font-weight: 600;
   color: #3d5a40;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .enquiry-form-horizontal {
@@ -119,7 +119,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 16px;
   max-height: 88vh;
   overflow-y: auto;
   padding: 10px;

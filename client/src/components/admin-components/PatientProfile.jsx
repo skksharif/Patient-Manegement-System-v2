@@ -16,7 +16,11 @@ export default function PatientProfile() {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/patients/${id}`);
+        const res = await axios.get(`${BASE_URL}/api/patients/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setPatient(res.data);
       } catch {
         toast.error("Failed to fetch patient");
@@ -38,11 +42,21 @@ export default function PatientProfile() {
     fetchVisits();
   }, [id]);
 
-  if (!patient) return <div><Loader/></div>;
+  if (!patient)
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="patient-profile-container">
-      <PatientDetails patient={patient} setPatient={setPatient} patientId={id} visits={visits} />
+      <PatientDetails
+        patient={patient}
+        setPatient={setPatient}
+        patientId={id}
+        visits={visits}
+      />
       <VisitHistory visits={visits} />
     </div>
   );
