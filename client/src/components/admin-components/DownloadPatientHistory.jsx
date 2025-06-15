@@ -63,18 +63,29 @@ const DownloadPatientHistory = ({ patientId }) => {
 
       const addHeader = (firstPage = false) => {
         addPageBorder();
+
         if (firstPage) {
-          doc.addImage(logo, "PNG", 12, 12, 40, 16);
+          const logoWidth = 40;
+          const logoHeight = 16;
+          const logoX = (pageWidth - logoWidth) / 2;
+          const logoY = 12;
+
+          // Title to the left of logo
+          const titleX = logoX - 70; // Adjust this as needed
+          const titleY = logoY + 10;
+
           doc.setFont("helvetica", "bold");
           doc.setFontSize(14);
           doc.setTextColor(...oliveGreen);
-          doc.text("CLIENT HISTORY", pageWidth / 2, 22, { align: "center" });
+          doc.text("CLIENT HISTORY", titleX, titleY); // Left of the logo
+
+          doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight); // Centered logo
         } else {
-          doc.addImage(logo, "PNG", 12, 12, 30, 12);
+          const logoWidth = 30;
+          const logoHeight = 12;
+          const logoX = (pageWidth - logoWidth) / 2;
+          doc.addImage(logo, "PNG", logoX, 12, logoWidth, logoHeight); // Centered logo
         }
-        doc.setFontSize(9);
-        doc.setTextColor(80);
-        doc.text(`Date: ${today}`, pageWidth - 35, 16);
       };
 
       addHeader(true);

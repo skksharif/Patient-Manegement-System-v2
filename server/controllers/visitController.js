@@ -3,7 +3,7 @@ const Visit = require("../models/Visit");
 // 1. Create a visit (OP or IP)
 const createVisit = async (req, res) => {
   try {
-    const { patientId, type, reason, note, roomNo, doctor,therapist, nextVisit } = req.body;
+    const { patientId, type, reason, note, roomNo, doctor, therapist, nextVisit, checkInTime } = req.body;
 
     if (type === "IP") {
       const activeIP = await Visit.findOne({ patientId, type: "IP", checkOutTime: null });
@@ -21,7 +21,7 @@ const createVisit = async (req, res) => {
       roomNo,
       doctor,
       therapist,
-      checkInTime: type === "IP" ? new Date() : null,
+      checkInTime: type === "IP" && checkInTime ? new Date(checkInTime) : null,
       nextVisit: nextVisit ? new Date(nextVisit) : null,
     });
 
@@ -31,6 +31,7 @@ const createVisit = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 // 2. Checkout a patient (IP only)
 const checkoutVisit = async (req, res) => {
@@ -189,6 +190,37 @@ const getVisitsByType = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// routes/visits.js or controller
+const addOrUpdateDailyReport = async (req, res) => {
+  try {
+    const { visitId } = req.params;
+    const { note } = req.body;
+
+    const visit = await Visit.findById(visitId);
+    if (!visit) return res.status(404).json({ error: "Visit not found" });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const existingReport = visit.dailyReports.find(r => {
+      const reportDate = new Date(r.date);
+      reportDate.setHours(0, 0, 0, 0);
+      return reportDate.getTime() === today.getTime();
+    });
+
+    if (existingReport) {
+      existingReport.note = note; // update
+    } else {
+      visit.dailyReports.push({ date: new Date(), note }); // add new
+    }
+
+    await visit.save();
+    res.status(200).json(visit.dailyReports);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 module.exports = {
   createVisit,
@@ -200,4 +232,5 @@ module.exports = {
   getAllCheckedOutPatients,
   getUpcomingVisits,
   getVisitsByType,
+  addOrUpdateDailyReport
 };

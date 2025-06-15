@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+const dailyReportSchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  note: {
+    type: String,
+    required: true,
+  }
+});
+
 const visitSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -34,11 +45,12 @@ const visitSchema = new mongoose.Schema({
   },
 
   doctor: {
-    type: String, // or use ObjectId if referencing a Doctor model
+    type: String,
     required: false,
   },
+
   therapist: {
-    type: String, // or use ObjectId if referencing a Doctor model
+    type: String,
     required: false,
   },
 
@@ -51,6 +63,8 @@ const visitSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+
+  dailyReports: [dailyReportSchema],
 
   createdAt: {
     type: Date,

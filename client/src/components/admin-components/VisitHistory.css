@@ -1,0 +1,103 @@
+/* General section styling */
+.history-section {
+  background-color: #f9f9f9;
+}
+
+/* Visit card styling */
+.visit-card {
+  transition: transform 0.3s ease;
+}
+.visit-card:hover {
+  transform: scale(1.01);
+}
+
+/* Modal overlay full screen and top */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Modal box */
+.popup-modal {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Buttons */
+.modal-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.modal-button.confirm {
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+}
+.modal-button.confirm:hover {
+  background-color: #2563eb;
+}
+
+.modal-button.cancel {
+  background-color: #e5e7eb;
+  color: #111827;
+  border: none;
+}
+.modal-button.cancel:hover {
+  background-color: #d1d5db;
+}
+
+/* Action buttons */
+.checkout-button,
+.enter-note-button,
+.view-note-button {
+  display: inline-block;
+  background-color: #10b981;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.enter-note-button {
+  background-color: #f59e0b;
+}
+
+.view-note-button {
+  background-color: #6366f1;
+}
+
+.checkout-button:hover {
+  background-color: #059669;
+}
+.enter-note-button:hover {
+  background-color: #d97706;
+}
+.view-note-button:hover {
+  background-color: #4f46e5;
+}
+
+/* Utility */
+.overflow-hidden {
+  overflow: hidden;
+}

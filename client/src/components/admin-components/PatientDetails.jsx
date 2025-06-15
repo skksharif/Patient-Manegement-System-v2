@@ -5,18 +5,14 @@ import { toast } from "react-toastify";
 import BASE_URL from "../config";
 import DownloadPatientHistory from "./DownloadPatientHistory";
 
-// Required for accessibility
 Modal.setAppElement("#root");
 
-export default function PatientDetails({
-  patient,
-  setPatient,
-  patientId,
-  visits,
-}) {
+export default function PatientDetails({ patient, setPatient, patientId, visits }) {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(patient);
-  const [modalType, setModalType] = useState(null); // "visit", "nextVisit", "promote"
+  const [modalType, setModalType] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [modalData, setModalData] = useState({
     type: "",
     reason: "",
@@ -24,9 +20,9 @@ export default function PatientDetails({
     nextVisit: "",
     roomNo: "",
     doctor: "",
-    therepist: "",
+    therapist: "",
+    checkInTime: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const hasActiveIP = visits.some((v) => v.type === "IP" && !v.checkOutTime);
   const latestVisit = visits[0];
@@ -41,10 +37,23 @@ export default function PatientDetails({
       roomNo: "",
       doctor: "",
       therapist: "",
+      checkInTime: "",
     });
   };
 
-  const closeModal = () => setModalType(null);
+  const closeModal = () => {
+    setModalType(null);
+    setModalData({
+      type: "",
+      reason: "",
+      note: "",
+      nextVisit: "",
+      roomNo: "",
+      doctor: "",
+      therapist: "",
+      checkInTime: "",
+    });
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,26 +79,22 @@ export default function PatientDetails({
   const handleSubmitModal = async () => {
     setIsSubmitting(true);
     try {
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
+
       if (modalType === "visit") {
         await axios.post(
           `${BASE_URL}/api/visits/create`,
           { patientId, ...modalData },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          { headers }
         );
         toast.success("Visit added");
       } else if (modalType === "nextVisit") {
         await axios.put(
           `${BASE_URL}/api/visits/next-visit/${patientId}`,
           { nextVisit: modalData.nextVisit },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          { headers }
         );
         toast.success("Next visit added");
       } else if (modalType === "promote") {
@@ -103,14 +108,11 @@ export default function PatientDetails({
             doctor: modalData.doctor,
             therapist: modalData.therapist,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          { headers }
         );
         toast.success("Promoted to Inpatient");
       }
+
       closeModal();
       window.location.reload();
     } catch {
@@ -131,19 +133,17 @@ export default function PatientDetails({
 
       {editMode ? (
         <div className="patient-details-form">
-          {["name", "phone", "aadharNo", "gender", "age", "address"].map(
-            (key) => (
-              <label key={key}>
-                {key.charAt(0).toUpperCase() + key.slice(1)}:
-                <input
-                  type={key === "age" ? "number" : "text"}
-                  name={key}
-                  value={formData[key] || ""}
-                  onChange={handleInputChange}
-                />
-              </label>
-            )
-          )}
+          {["name", "phone", "aadharNo", "gender", "age", "address"].map((key) => (
+            <label key={key}>
+              {key.charAt(0).toUpperCase() + key.slice(1)}:
+              <input
+                type={key === "age" ? "number" : "text"}
+                name={key}
+                value={formData[key] || ""}
+                onChange={handleInputChange}
+              />
+            </label>
+          ))}
           <button className="save-button" onClick={handleUpdate}>
             Save
           </button>
@@ -151,57 +151,30 @@ export default function PatientDetails({
       ) : (
         <>
           <div className="patient-details">
-            <p>
-              <strong>Phone:</strong> {patient.phone}
-            </p>
-            <p>
-              <strong>Aadhar:</strong> {patient.aadharNo}
-            </p>
-            <p>
-              <strong>Gender:</strong> {patient.gender}
-            </p>
-            <p>
-              <strong>Age:</strong> {patient.age}
-            </p>
-            <p>
-              <strong>Address:</strong> {patient.address}
-            </p>
+            <p><strong>Phone:</strong> {patient.phone}</p>
+            <p><strong>Aadhar:</strong> {patient.aadharNo}</p>
+            <p><strong>Gender:</strong> {patient.gender}</p>
+            <p><strong>Age:</strong> {patient.age}</p>
+            <p><strong>Address:</strong> {patient.address}</p>
           </div>
 
-          {!hasActiveIP && (
+          {!hasActiveIP ? (
             <>
-              <button
-                className="checkin-button"
-                onClick={() => openModal("visit")}
-              >
-                New Visit
-              </button>
-              <button
-                className="nextvisit-button"
-                onClick={() => openModal("nextVisit")}
-              >
-                Add Next Visit
-              </button>
-              {latestVisit &&
-                latestVisit.type === "OP" &&
-                !latestVisit.checkOutTime && (
-                  <button
-                    className="promote-button"
-                    onClick={() => openModal("promote")}
-                  >
-                    Promote to Inpatient
-                  </button>
-                )}
+              <button className="checkin-button" onClick={() => openModal("visit")}>New Visit</button>
+              <button className="nextvisit-button" onClick={() => openModal("nextVisit")}>Add Next Visit</button>
+              {latestVisit && latestVisit.type === "OP" && !latestVisit.checkOutTime && (
+                <button className="promote-button" onClick={() => openModal("promote")}>Promote to Inpatient</button>
+              )}
             </>
-          )}
-          {hasActiveIP && (
+          ) : (
             <span className="status-info">Currently Admitted (IP)</span>
           )}
+
           <DownloadPatientHistory patientId={patientId} />
         </>
       )}
 
-      {/* Modal Popup */}
+      {/* Modal */}
       <Modal
         isOpen={!!modalType}
         onRequestClose={closeModal}
@@ -220,11 +193,7 @@ export default function PatientDetails({
           <>
             <label>
               Visit Type:
-              <select
-                name="type"
-                value={modalData.type}
-                onChange={handleModalChange}
-              >
+              <select name="type" value={modalData.type} onChange={handleModalChange}>
                 <option value="">Select</option>
                 <option value="OP">OP</option>
                 <option value="IP">IP</option>
@@ -239,27 +208,27 @@ export default function PatientDetails({
             />
             <input
               type="text"
-              name="therapist"
-              placeholder="Therapist Name"
-              value={modalData.therapist}
-              onChange={handleModalChange}
-            />
-            <input
-              type="text"
               name="reason"
               placeholder="Reason"
               value={modalData.reason}
               onChange={handleModalChange}
             />
+            <input
+              type="text"
+              name="therapist"
+              placeholder="Therapist Name"
+              value={modalData.therapist}
+              onChange={handleModalChange}
+            />
             <label>
-              Note:
               <textarea
                 name="note"
                 placeholder="Note"
                 value={modalData.note}
                 onChange={handleModalChange}
-              ></textarea>
+              />
             </label>
+
             {modalData.type === "IP" && (
               <>
                 <input
@@ -269,6 +238,14 @@ export default function PatientDetails({
                   value={modalData.roomNo}
                   onChange={handleModalChange}
                 />
+                <label>
+                  <input
+                    type="datetime-local"
+                    name="checkInTime"
+                    value={modalData.checkInTime}
+                    onChange={handleModalChange}
+                  />
+                </label>
               </>
             )}
           </>
@@ -293,13 +270,12 @@ export default function PatientDetails({
               onChange={handleModalChange}
             />
             <label>
-              Note:
               <textarea
                 name="note"
                 placeholder="Note"
                 value={modalData.note}
                 onChange={handleModalChange}
-              ></textarea>
+              />
             </label>
             <input
               type="text"
@@ -325,12 +301,8 @@ export default function PatientDetails({
           </>
         )}
 
-        <div style={{ marginTop: "10px" }}>
-          <button
-            onClick={handleSubmitModal}
-            className="save-button"
-            disabled={isSubmitting}
-          >
+        <div className="modal-buttons">
+          <button onClick={handleSubmitModal} className="save-button" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
           <button onClick={closeModal} className="edit-button">

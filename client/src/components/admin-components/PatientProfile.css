@@ -203,7 +203,7 @@
   padding: 36px;
   width: 95%;
   max-width: 500px;
-  margin: 50px auto;
+  margin: 5px auto;
   border-radius: 14px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
   z-index: 1000;
@@ -223,8 +223,8 @@
 .popup-modal textarea {
   width: 100%;
   padding: 12px 14px;
-  margin-top: 10px;
-  margin-bottom: 18px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 15px;
