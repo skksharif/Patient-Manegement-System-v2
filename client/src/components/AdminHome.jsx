@@ -19,6 +19,7 @@ import AllPatients from "./admin-components/AllPatients";
 import CheckedIn from "./admin-components/CheckedIn";
 import Checkedout from "./admin-components/Checkedout";
 import Upcoming from "./admin-components/Upcoming";
+import Enquiry from "./admin-components/Enquiry";
 
 export default function AdminHome() {
   const navigate = useNavigate();
@@ -56,10 +57,20 @@ export default function AdminHome() {
                 }
                 onClick={() => setSidebarOpen(false)}
               >
-            <MdDashboard/>
+                <MdDashboard />
                 <span>Dashboard</span>
               </NavLink>
-
+              <NavLink
+                to="/admin-home/enquiries"
+                end
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                onClick={() => setSidebarOpen(false)}
+              >
+                <FaUserPlus />
+                <span>Enquiries</span>
+              </NavLink>
               <NavLink
                 to="/admin-home/add-patient"
                 end
@@ -68,7 +79,7 @@ export default function AdminHome() {
                 }
                 onClick={() => setSidebarOpen(false)}
               >
-                   <FaUserPlus />
+                <FaUserPlus />
                 <span>Add Patient</span>
               </NavLink>
 
@@ -139,6 +150,7 @@ export default function AdminHome() {
         <main className="main-board">
           <Routes>
             <Route path="" element={<Home />} />
+            <Route path="enquiries" element={<Enquiry />} />
             <Route path="add-patient" element={<AddPatient />} />
             <Route path="all-patients" element={<AllPatients />} />
             <Route path="patient/:id" element={<PatientProfile />} />

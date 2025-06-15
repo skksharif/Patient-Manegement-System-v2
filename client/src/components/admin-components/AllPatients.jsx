@@ -17,7 +17,12 @@ export default function AllPatients() {
     const fetchPatients = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/patients/all-patients`
+          `${BASE_URL}/api/patients/all-patients`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
         setPatients(response.data);
       } catch (error) {

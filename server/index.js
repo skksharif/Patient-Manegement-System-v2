@@ -9,7 +9,9 @@ connectDB();
 
 const adminRoutes = require("./routes/adminRoutes");
 const patientRoutes = require("./routes/patientRoutes");
-const visitRoutes = require("./routes/visitRoutes")
+const visitRoutes = require("./routes/visitRoutes");
+const enquiryRoutes = require("./routes/enquiryRoutes");
+
 
 app.use(express.json());
 
@@ -22,6 +24,8 @@ app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/admin",adminRoutes);
 app.use("/api/patients",patientRoutes);
 app.use("/api/visits",visitRoutes);
+app.use("/api/enquiries", enquiryRoutes);
+
 
 app.listen(process.env.PORT,(err)=>{
     if(err){
