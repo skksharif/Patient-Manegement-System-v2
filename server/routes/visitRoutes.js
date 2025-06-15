@@ -12,6 +12,7 @@ const {
   getAllActiveInpatients,
   getAllCheckedOutPatients,
   addOrUpdateDailyReport,
+  getDailyReports,
 } = require("../controllers/visitController");
 
 router.post("/create", auth, createVisit);                      // OP or IP
@@ -24,6 +25,8 @@ router.get("/checkedout-patients", auth, getAllCheckedOutPatients); // All IPs w
 router.get("/upcoming", auth, getUpcomingVisits);    // Upcoming Visits
 router.get("/type/:type", auth, getVisitsByType);               // By Type
 router.post("/:visitId/daily-report", auth, addOrUpdateDailyReport);
+router.get("/:visitId/daily-report", getDailyReports);
+
 
 
 module.exports = router;

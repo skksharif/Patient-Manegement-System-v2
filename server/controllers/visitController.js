@@ -222,6 +222,21 @@ const addOrUpdateDailyReport = async (req, res) => {
 };
 
 
+
+const getDailyReports = async (req, res) => {
+  try {
+    const { visitId } = req.params;
+
+    const visit = await Visit.findById(visitId);
+    if (!visit) return res.status(404).json({ error: "Visit not found" });
+
+    res.status(200).json(visit.dailyReports);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 module.exports = {
   createVisit,
   checkoutVisit,
@@ -232,5 +247,6 @@ module.exports = {
   getAllCheckedOutPatients,
   getUpcomingVisits,
   getVisitsByType,
-  addOrUpdateDailyReport
+  addOrUpdateDailyReport,
+  getDailyReports
 };

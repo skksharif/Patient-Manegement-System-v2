@@ -2,31 +2,30 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
-import "./VisitHistory.css"; // Import the custom CSS
+import "./VisitHistory.css";
 
 export default function VisitHistory({ visits }) {
   const [loadingVisitId, setLoadingVisitId] = useState(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
   const [nextVisitDate, setNextVisitDate] = useState("");
 
-  const [reportModal, setReportModal] = useState(null); // { id, mode: "enter" | "view" }
+  const [reportModal, setReportModal] = useState(null);
   const [reportNote, setReportNote] = useState("");
   const [savingReportId, setSavingReportId] = useState(null);
+  const [dailyReports, setDailyReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(false);
 
   const formatDate = (dateStr, includeTime = false) => {
     if (!dateStr) return "Not Available";
     const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    if (!includeTime) return `${day}/${month}/${year}`;
-
-    const hours = date.getHours() % 12 || 12;
-    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const y = date.getFullYear();
+    if (!includeTime) return `${d}/${m}/${y}`;
+    const h = date.getHours() % 12 || 12;
+    const min = String(date.getMinutes()).padStart(2, "0");
     const ampm = date.getHours() >= 12 ? "PM" : "AM";
-
-    return `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+    return `${d}/${m}/${y}, ${h}:${min} ${ampm}`;
   };
 
   const handleCheckOut = async (visitId) => {
@@ -35,9 +34,7 @@ export default function VisitHistory({ visits }) {
       await axios.put(
         `${BASE_URL}/api/visits/checkout/${visitId}`,
         { nextVisit: nextVisitDate || null },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       toast.success("Checked out successfully");
       window.location.reload();
@@ -57,9 +54,7 @@ export default function VisitHistory({ visits }) {
       await axios.post(
         `${BASE_URL}/api/visits/${visitId}/daily-report`,
         { note: reportNote },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       toast.success("Report saved!");
       window.location.reload();
@@ -73,67 +68,62 @@ export default function VisitHistory({ visits }) {
     }
   };
 
-  return (
-    <div className="history-section p-4">
-      <h2 className="section-title text-xl font-bold mb-4">Visit History</h2>
+  const handleViewReports = async (visitId) => {
+    setLoadingReports(true);
+    try {
+      const res = await axios.get(`${BASE_URL}/api/visits/${visitId}/daily-report`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setDailyReports(res.data);
+      setReportModal({ id: visitId, mode: "view" });
+      document.body.classList.add("overflow-hidden");
+    } catch {
+      toast.error("Failed to fetch reports");
+    } finally {
+      setLoadingReports(false);
+    }
+  };
 
+  return (
+    <div className="visit-history-container">
+      <h2 className="title">Visit History</h2>
       {visits.length === 0 ? (
-        <p className="text-gray-600">No visits yet.</p>
+        <p className="text-muted">No visits yet.</p>
       ) : (
-        <div className="visit-history grid gap-4">
+        <div className="visit-list">
           {visits.map((visit) => (
-            <div
-              key={visit._id}
-              className="visit-card bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col md:flex-row justify-between"
-            >
-              {/* Left Section */}
-              <div className="visit-left space-y-2 text-sm text-gray-700">
+            <div className="visit-card" key={visit._id}>
+              <div className="visit-left">
                 <p><strong>Type:</strong> {visit.type}</p>
                 <p><strong>Reason:</strong> {visit.reason}</p>
                 <p><strong>Note:</strong> {visit.note}</p>
                 <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
                 <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
               </div>
-
-              {/* Right Section */}
-              <div className="visit-right space-y-2 text-sm text-gray-700 mt-4 md:mt-0 md:text-right">
+              <div className="visit-right">
                 <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
                 <p><strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}</p>
                 <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime, true) : "Not yet"}</p>
                 <p><strong>Next Visit:</strong> {formatDate(visit.nextVisit)}</p>
 
                 {!visit.checkOutTime && visit.checkInTime && (
-                  <div className="space-y-2">
-                    <button
-                      className="checkout-button"
-                      onClick={() => {
-                        setShowCheckoutModal(visit._id);
-                        document.body.classList.add("overflow-hidden");
-                      }}
-                    >
+                  <div className="button-group">
+                    <button onClick={() => {
+                      setShowCheckoutModal(visit._id);
+                      document.body.classList.add("overflow-hidden");
+                    }}>
                       Checkout
                     </button>
-
                     {visit.type === "IP" && (
                       <>
-                        <button
-                          className="enter-note-button"
-                          onClick={() => {
-                            setReportModal({ id: visit._id, mode: "enter" });
-                            setReportNote("");
-                            document.body.classList.add("overflow-hidden");
-                          }}
-                        >
+                        <button onClick={() => {
+                          setReportModal({ id: visit._id, mode: "enter" });
+                          setReportNote("");
+                          document.body.classList.add("overflow-hidden");
+                        }}>
                           Enter Note
                         </button>
-
-                        <button
-                          className="view-note-button"
-                          onClick={() => {
-                            setReportModal({ id: visit._id, mode: "view" });
-                            document.body.classList.add("overflow-hidden");
-                          }}
-                        >
+                        <button onClick={() => handleViewReports(visit._id)}>
                           View Notes
                         </button>
                       </>
@@ -141,106 +131,88 @@ export default function VisitHistory({ visits }) {
                   </div>
                 )}
               </div>
-
-              {/* Checkout Modal */}
-              {showCheckoutModal === visit._id && (
-                <div className="modal-overlay">
-                  <div className="popup-modal">
-                    <h3 className="text-lg font-semibold">Confirm Checkout</h3>
-                    <p className="text-sm text-gray-600">Enter next visit date (optional):</p>
-                    <input
-                      type="date"
-                      value={nextVisitDate}
-                      onChange={(e) => setNextVisitDate(e.target.value)}
-                      className="w-full px-3 py-2 border rounded text-sm"
-                    />
-                    <div className="flex justify-end gap-2 mt-4">
-                      <button
-                        className="modal-button cancel"
-                        onClick={() => {
-                          setShowCheckoutModal(null);
-                          setNextVisitDate("");
-                          document.body.classList.remove("overflow-hidden");
-                        }}
-                        disabled={loadingVisitId === visit._id}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="modal-button confirm"
-                        onClick={() => handleCheckOut(visit._id)}
-                        disabled={loadingVisitId === visit._id}
-                      >
-                        {loadingVisitId === visit._id ? "Checking out..." : "Confirm"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Report Modal */}
-              {reportModal?.id === visit._id && (
-                <div className="modal-overlay">
-                  <div className="popup-modal">
-                    <h3 className="text-lg font-semibold mb-2">
-                      {reportModal.mode === "enter" ? "Enter Daily Report" : "Daily Notes"}
-                    </h3>
-
-                    {reportModal.mode === "enter" ? (
-                      <>
-                        <textarea
-                          rows={5}
-                          value={reportNote}
-                          onChange={(e) => setReportNote(e.target.value)}
-                          placeholder="Enter today's report..."
-                          className="w-full px-3 py-2 border rounded text-sm"
-                        />
-                        <div className="flex justify-end gap-2 mt-4">
-                          <button
-                            className="modal-button cancel"
-                            onClick={() => {
-                              setReportModal(null);
-                              setReportNote("");
-                              document.body.classList.remove("overflow-hidden");
-                            }}
-                            disabled={savingReportId === visit._id}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="modal-button confirm"
-                            onClick={() => handleSaveReport(visit._id)}
-                            disabled={savingReportId === visit._id}
-                          >
-                            {savingReportId === visit._id ? "Saving..." : "Save"}
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-sm text-gray-700 whitespace-pre-line">
-                          • 10/06/2025 - Patient stable.{"\n"}
-                          • 11/06/2025 - Physiotherapy done.{"\n"}
-                          • 12/06/2025 - Responding well.
-                        </p>
-                        <div className="flex justify-end mt-4">
-                          <button
-                            className="modal-button cancel"
-                            onClick={() => {
-                              setReportModal(null);
-                              document.body.classList.remove("overflow-hidden");
-                            }}
-                          >
-                            Close
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Checkout Modal */}
+      {showCheckoutModal && (
+        <div className="modal-overlay">
+          <div className="popup-modal">
+            <h3>Confirm Checkout</h3>
+            <p>Enter next visit date (optional):</p>
+            <input
+              type="date"
+              value={nextVisitDate}
+              onChange={(e) => setNextVisitDate(e.target.value)}
+            />
+            <div className="modal-buttons">
+              <button onClick={() => {
+                setShowCheckoutModal(null);
+                setNextVisitDate("");
+                document.body.classList.remove("overflow-hidden");
+              }}>
+                Cancel
+              </button>
+              <button onClick={() => handleCheckOut(showCheckoutModal)}>
+                {loadingVisitId === showCheckoutModal ? "Checking out..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {reportModal && (
+        <div className="modal-overlay">
+          <div className="popup-modal">
+            <h3>{reportModal.mode === "enter" ? "Enter Daily Report" : "Daily Notes"}</h3>
+            {reportModal.mode === "enter" ? (
+              <>
+                <textarea
+                  rows={5}
+                  value={reportNote}
+                  onChange={(e) => setReportNote(e.target.value)}
+                  placeholder="Enter today's report..."
+                />
+                <div className="modal-buttons">
+                  <button onClick={() => {
+                    setReportModal(null);
+                    setReportNote("");
+                    document.body.classList.remove("overflow-hidden");
+                  }}>
+                    Cancel
+                  </button>
+                  <button onClick={() => handleSaveReport(reportModal.id)}>
+                    {savingReportId === reportModal.id ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {loadingReports ? (
+                  <p>Loading...</p>
+                ) : dailyReports.length === 0 ? (
+                  <p>No reports available.</p>
+                ) : (
+                  <div className="report-notes">
+                    {dailyReports.map((r, i) => (
+                      <p key={i}>• {formatDate(r.date)} - {r.note}</p>
+                    ))}
+                  </div>
+                )}
+                <div className="modal-buttons">
+                  <button onClick={() => {
+                    setReportModal(null);
+                    document.body.classList.remove("overflow-hidden");
+                  }}>
+                    Close
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
