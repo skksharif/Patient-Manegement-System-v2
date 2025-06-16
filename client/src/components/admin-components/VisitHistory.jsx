@@ -1,32 +1,22 @@
 import React, { useState } from "react";
+import CheckoutModal from "./CheckoutModal";
+import AddTreatmentModal from "./AddTreatmentModal";
+import ViewTreatmentsModal from "./ViewTreatmentsModal";
+import VisitCard from "./VisitCard";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
 import "./VisitHistory.css";
 
-export default function VisitHistory({ visits }) {
+export default function VisitHistory({ visits, refreshVisits }) {
   const [loadingVisitId, setLoadingVisitId] = useState(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
   const [nextVisitDate, setNextVisitDate] = useState("");
-
-  const [reportModal, setReportModal] = useState(null);
-  const [reportNote, setReportNote] = useState("");
-  const [savingReportId, setSavingReportId] = useState(null);
-  const [dailyReports, setDailyReports] = useState([]);
-  const [loadingReports, setLoadingReports] = useState(false);
-
-  const formatDate = (dateStr, includeTime = false) => {
-    if (!dateStr) return "Not Available";
-    const date = new Date(dateStr);
-    const d = String(date.getDate()).padStart(2, "0");
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const y = date.getFullYear();
-    if (!includeTime) return `${d}/${m}/${y}`;
-    const h = date.getHours() % 12 || 12;
-    const min = String(date.getMinutes()).padStart(2, "0");
-    const ampm = date.getHours() >= 12 ? "PM" : "AM";
-    return `${d}/${m}/${y}, ${h}:${min} ${ampm}`;
-  };
+  const [activeVisitId, setActiveVisitId] = useState(null);
+  const [dailyForm, setDailyForm] = useState({ date: "", morning: "", evening: "" });
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [treatments, setTreatments] = useState([]);
 
   const handleCheckOut = async (visitId) => {
     setLoadingVisitId(visitId);
@@ -37,7 +27,7 @@ export default function VisitHistory({ visits }) {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       toast.success("Checked out successfully");
-      window.location.reload();
+      refreshVisits(); // ✅ Refresh visits after checkout
     } catch {
       toast.error("Failed to check out");
     } finally {
@@ -48,39 +38,36 @@ export default function VisitHistory({ visits }) {
     }
   };
 
-  const handleSaveReport = async (visitId) => {
-    setSavingReportId(visitId);
+  const handleAddTreatment = async () => {
+    if (!dailyForm.date) return toast.error("Date required");
     try {
       await axios.post(
-        `${BASE_URL}/api/visits/${visitId}/daily-report`,
-        { note: reportNote },
+        `${BASE_URL}/api/treatments/${activeVisitId}/daily-treatment`,
+        {
+          date: dailyForm.date,
+          morning: { therapy: dailyForm.morning, therapist: "" },
+          evening: { therapy: dailyForm.evening, therapist: "" },
+        },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      toast.success("Report saved!");
-      window.location.reload();
+      toast.success("Treatment added!");
+      setShowAddModal(false);
+      setDailyForm({ date: "", morning: "", evening: "" });
+      setActiveVisitId(null);
     } catch {
-      toast.error("Failed to save report");
-    } finally {
-      setSavingReportId(null);
-      setReportModal(null);
-      setReportNote("");
-      document.body.classList.remove("overflow-hidden");
+      toast.error("Error adding treatment");
     }
   };
 
-  const handleViewReports = async (visitId) => {
-    setLoadingReports(true);
+  const handleViewTreatments = async (visitId) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/visits/${visitId}/daily-report`, {
+      const res = await axios.get(`${BASE_URL}/api/treatments/${visitId}/daily-treatment`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setDailyReports(res.data);
-      setReportModal({ id: visitId, mode: "view" });
-      document.body.classList.add("overflow-hidden");
+      setTreatments(res.data);
+      setShowViewModal(true);
     } catch {
-      toast.error("Failed to fetch reports");
-    } finally {
-      setLoadingReports(false);
+      toast.error("Failed to fetch treatments");
     }
   };
 
@@ -92,129 +79,60 @@ export default function VisitHistory({ visits }) {
       ) : (
         <div className="visit-list">
           {visits.map((visit) => (
-            <div className="visit-card" key={visit._id}>
-              <div className="visit-left">
-                <p><strong>Type:</strong> {visit.type}</p>
-                <p><strong>Reason:</strong> {visit.reason}</p>
-                <p><strong>Note:</strong> {visit.note}</p>
-                <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
-                <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
-              </div>
-              <div className="visit-right">
-                <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
-                <p><strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}</p>
-                <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime, true) : "Not yet"}</p>
-                <p><strong>Next Visit:</strong> {formatDate(visit.nextVisit)}</p>
-
-                {!visit.checkOutTime && visit.checkInTime && (
-                  <div className="button-group">
-                    <button onClick={() => {
-                      setShowCheckoutModal(visit._id);
-                      document.body.classList.add("overflow-hidden");
-                    }}>
-                      Checkout
-                    </button>
-                    {visit.type === "IP" && (
-                      <>
-                        <button onClick={() => {
-                          setReportModal({ id: visit._id, mode: "enter" });
-                          setReportNote("");
-                          document.body.classList.add("overflow-hidden");
-                        }}>
-                          Enter Note
-                        </button>
-                        <button onClick={() => handleViewReports(visit._id)}>
-                          View Notes
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
+            <VisitCard
+              key={visit._id}
+              visit={visit}
+              onCheckout={() => {
+                setShowCheckoutModal(visit._id);
+                document.body.classList.add("overflow-hidden");
+              }}
+              onAdd={() => {
+                setActiveVisitId(visit._id);
+                setShowAddModal(true);
+                document.body.classList.add("overflow-hidden");
+              }}
+              onView={() => {
+                handleViewTreatments(visit._id);
+                document.body.classList.add("overflow-hidden");
+              }}
+              onRefresh={refreshVisits} // ✅ Pass down refresh method
+            />
           ))}
         </div>
       )}
 
-      {/* Checkout Modal */}
-      {showCheckoutModal && (
-        <div className="modal-overlay">
-          <div className="popup-modal">
-            <h3>Confirm Checkout</h3>
-            <p>Enter next visit date (optional):</p>
-            <input
-              type="date"
-              value={nextVisitDate}
-              onChange={(e) => setNextVisitDate(e.target.value)}
-            />
-            <div className="modal-buttons">
-              <button onClick={() => {
-                setShowCheckoutModal(null);
-                setNextVisitDate("");
-                document.body.classList.remove("overflow-hidden");
-              }}>
-                Cancel
-              </button>
-              <button onClick={() => handleCheckOut(showCheckoutModal)}>
-                {loadingVisitId === showCheckoutModal ? "Checking out..." : "Confirm"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CheckoutModal
+        visible={showCheckoutModal}
+        loading={loadingVisitId === showCheckoutModal}
+        date={nextVisitDate}
+        setDate={setNextVisitDate}
+        onCancel={() => {
+          setShowCheckoutModal(null);
+          setNextVisitDate("");
+          document.body.classList.remove("overflow-hidden");
+        }}
+        onConfirm={() => handleCheckOut(showCheckoutModal)}
+      />
 
-      {/* Report Modal */}
-      {reportModal && (
-        <div className="modal-overlay">
-          <div className="popup-modal">
-            <h3>{reportModal.mode === "enter" ? "Enter Daily Report" : "Daily Notes"}</h3>
-            {reportModal.mode === "enter" ? (
-              <>
-                <textarea
-                  rows={5}
-                  value={reportNote}
-                  onChange={(e) => setReportNote(e.target.value)}
-                  placeholder="Enter today's report..."
-                />
-                <div className="modal-buttons">
-                  <button onClick={() => {
-                    setReportModal(null);
-                    setReportNote("");
-                    document.body.classList.remove("overflow-hidden");
-                  }}>
-                    Cancel
-                  </button>
-                  <button onClick={() => handleSaveReport(reportModal.id)}>
-                    {savingReportId === reportModal.id ? "Saving..." : "Save"}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                {loadingReports ? (
-                  <p>Loading...</p>
-                ) : dailyReports.length === 0 ? (
-                  <p>No reports available.</p>
-                ) : (
-                  <div className="report-notes">
-                    {dailyReports.map((r, i) => (
-                      <p key={i}>• {formatDate(r.date)} - {r.note}</p>
-                    ))}
-                  </div>
-                )}
-                <div className="modal-buttons">
-                  <button onClick={() => {
-                    setReportModal(null);
-                    document.body.classList.remove("overflow-hidden");
-                  }}>
-                    Close
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <AddTreatmentModal
+        visible={showAddModal}
+        form={dailyForm}
+        setForm={setDailyForm}
+        onCancel={() => {
+          setShowAddModal(false);
+          document.body.classList.remove("overflow-hidden");
+        }}
+        onSave={handleAddTreatment}
+      />
+
+      <ViewTreatmentsModal
+        visible={showViewModal}
+        treatments={treatments}
+        onClose={() => {
+          setShowViewModal(false);
+          document.body.classList.remove("overflow-hidden");
+        }}
+      />
     </div>
   );
 }

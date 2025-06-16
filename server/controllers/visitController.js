@@ -190,49 +190,30 @@ const getVisitsByType = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// routes/visits.js or controller
-const addOrUpdateDailyReport = async (req, res) => {
+// 10. Edit a visit (OP or IP)
+const editVisit = async (req, res) => {
   try {
     const { visitId } = req.params;
-    const { note } = req.body;
+    const updates = req.body;
 
     const visit = await Visit.findById(visitId);
-    if (!visit) return res.status(404).json({ error: "Visit not found" });
+    if (!visit) return res.status(404).json({ error: "Visit not found." });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    const existingReport = visit.dailyReports.find(r => {
-      const reportDate = new Date(r.date);
-      reportDate.setHours(0, 0, 0, 0);
-      return reportDate.getTime() === today.getTime();
-    });
-
-    if (existingReport) {
-      existingReport.note = note; // update
-    } else {
-      visit.dailyReports.push({ date: new Date(), note }); // add new
-    }
+    // Update fields only if provided
+    if (updates.reason !== undefined) visit.reason = updates.reason;
+    if (updates.note !== undefined) visit.note = updates.note;
+    if (updates.roomNo !== undefined) visit.roomNo = updates.roomNo;
+    if (updates.doctor !== undefined) visit.doctor = updates.doctor;
+    if (updates.therapist !== undefined) visit.therapist = updates.therapist;
+    if (updates.checkInTime !== undefined) visit.checkInTime = new Date(updates.checkInTime);
+    if (updates.nextVisit !== undefined) visit.nextVisit = new Date(updates.nextVisit);
 
     await visit.save();
-    res.status(200).json(visit.dailyReports);
+
+    res.status(200).json({ message: "Visit updated successfully", visit });
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-
-const getDailyReports = async (req, res) => {
-  try {
-    const { visitId } = req.params;
-
-    const visit = await Visit.findById(visitId);
-    if (!visit) return res.status(404).json({ error: "Visit not found" });
-
-    res.status(200).json(visit.dailyReports);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -247,6 +228,5 @@ module.exports = {
   getAllCheckedOutPatients,
   getUpcomingVisits,
   getVisitsByType,
-  addOrUpdateDailyReport,
-  getDailyReports
+  editVisit
 };

@@ -13,41 +13,34 @@ export default function PatientProfile() {
   const [patient, setPatient] = useState(null);
   const [visits, setVisits] = useState([]);
 
+  const fetchPatient = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/patients/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setPatient(res.data);
+    } catch {
+      toast.error("Failed to fetch patient");
+    }
+  };
+
+  const fetchVisits = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/visits/history/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setVisits(res.data);
+    } catch {
+      toast.error("Failed to fetch visit history");
+    }
+  };
+
   useEffect(() => {
-    const fetchPatient = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/patients/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setPatient(res.data);
-      } catch {
-        toast.error("Failed to fetch patient");
-      }
-    };
-
-    const fetchVisits = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/visits/history/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setVisits(res.data);
-      } catch {
-        toast.error("Failed to fetch visit history");
-      }
-    };
-
     fetchPatient();
     fetchVisits();
   }, [id]);
 
-  if (!patient)
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+  if (!patient) return <Loader />;
 
   return (
     <div className="patient-profile-container">
@@ -57,7 +50,7 @@ export default function PatientProfile() {
         patientId={id}
         visits={visits}
       />
-      <VisitHistory visits={visits} />
+      <VisitHistory visits={visits} refreshVisits={fetchVisits} />
     </div>
   );
 }

@@ -1,0 +1,136 @@
+/* Main card container */
+.visit-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background: #f4f9f4;
+  border-left: 6px solid #4a772f;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  margin-bottom: 16px;
+}
+
+/* Hover animation */
+.visit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Left and right column */
+.visit-left,
+.visit-right {
+  flex: 1;
+  min-width: 280px;
+  padding: 8px;
+}
+
+/* Paragraph and field style */
+.visit-left p,
+.visit-right p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #2e3d2f;
+}
+
+.visit-left input,
+.visit-right input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.visit-left input:focus,
+.visit-right input:focus {
+  border-color: #4a772f;
+}
+
+/* Button group */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.button-group button {
+  background: #4caf50;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-group button:hover {
+  background: #388e3c;
+}
+
+/* Edit button top-right */
+.edit-btn {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background-color: #4a772f;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.edit-btn:hover {
+  background-color: #385c24;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .visit-left,
+  .visit-right {
+    flex: 1 1 100%;
+    padding: 6px 0;
+  }
+
+  .visit-card {
+    flex-direction: column;
+  }
+
+  .edit-btn {
+    top: 12px;
+    right: 16px;
+  }
+}
+.edit-btn {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #388e3c;
+}
+
+/* Ensure visit card is positioned for absolute children */
+.visit-card {
+  position: relative;
+}

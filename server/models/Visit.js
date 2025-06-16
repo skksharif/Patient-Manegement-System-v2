@@ -1,16 +1,5 @@
 const mongoose = require("mongoose");
 
-const dailyReportSchema = new mongoose.Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  note: {
-    type: String,
-    required: true,
-  }
-});
-
 const visitSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -64,7 +53,13 @@ const visitSchema = new mongoose.Schema({
     default: null,
   },
 
-  dailyReports: [dailyReportSchema],
+  // NEW FIELD FOR TREATMENTS
+  dailyTreatments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DailyTreatment",
+    }
+  ],
 
   createdAt: {
     type: Date,

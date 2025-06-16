@@ -11,6 +11,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const visitRoutes = require("./routes/visitRoutes");
 const enquiryRoutes = require("./routes/enquiryRoutes");
+const treatmentRoutes = require("./routes/treatmentRoutes");
+
 
 
 app.use(express.json());
@@ -19,12 +21,12 @@ app.post('/',(req,res)=>{
     console.log(req.body);
     res.json({message : "Its Begining"});
 })
-
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/admin",adminRoutes);
 app.use("/api/patients",patientRoutes);
 app.use("/api/visits",visitRoutes);
 app.use("/api/enquiries", enquiryRoutes);
+app.use("/api/treatments", treatmentRoutes);
 
 
 app.listen(process.env.PORT,(err)=>{
