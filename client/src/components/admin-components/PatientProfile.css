@@ -3,7 +3,6 @@
   width: 100%;
   height: 100vh;
   padding: 20px 60px;
-  background: #f0fff4cb;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -14,10 +13,10 @@
 
 /* Headers */
 .section-title {
-  color: #2e7d32;
+  color: #1b5e20;
   font-size: 24px;
   font-weight: 700;
-  border-bottom: 3px solid #2e7d32;
+  border-bottom: 3px solid #1b5e20;
   padding-bottom: 8px;
   margin-bottom: 10px;
 }
@@ -32,43 +31,34 @@
 .patient-profile-container button {
   font-family: inherit;
   font-weight: 600;
-}
-
-.edit-button,
-.save-button,
-.checkin-button,
-.nextvisit-button,
-.promote-button {
-  background-color: #007bff;
-  color: white;
+  padding: 10px 18px;
+  font-size: 14px;
   border: none;
-  padding: 8px 18px;
-  margin: 6px 6px 0 0;
-  border-radius: 8px;
+  border-radius: 6px;
+  color: #fff;
   cursor: pointer;
-  transition: 0.3s ease;
-  font-size: 13px;
+  transition: background-color 0.3s ease;
 }
 
 .checkin-button {
   background-color: #2e7d32;
 }
+.checkin-button:hover {
+  background-color: #1b5e20;
+}
 
 .nextvisit-button {
-  background-color: #689f38;
+  background-color: #558b2f;
+}
+.nextvisit-button:hover {
+  background-color: #33691e;
 }
 
 .promote-button {
-  background-color: #fb8c00;
+  background-color: #f57c00;
 }
-
-.edit-button:hover,
-.save-button:hover,
-.checkin-button:hover,
-.nextvisit-button:hover,
 .promote-button:hover {
-  transform: scale(1.03);
-  opacity: 0.95;
+  background-color: #e65100;
 }
 
 /* Form */
@@ -76,7 +66,7 @@
   display: block;
   margin-bottom: 14px;
   font-size: 15px;
-  color: #2e7d32;
+  color: #1b5e20;
   font-weight: 600;
 }
 
@@ -88,6 +78,13 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 15px;
+  background-color: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.patient-details-form input:focus {
+  outline: none;
+  border-color: #2e7d32;
 }
 
 /* Details Layout */
@@ -103,7 +100,7 @@
   margin: 4px 0;
   line-height: 1.6;
 }
+
 .visit-card p {
   padding: 2px 6px;
 }
-

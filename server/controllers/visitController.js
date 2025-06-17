@@ -124,11 +124,9 @@ const addNextVisit = async (req, res) => {
     if (!latestVisit) return res.status(404).json({ error: "No visit found." });
 
     if (latestVisit.type === "IP" && !latestVisit.checkOutTime) {
-      return res
-        .status(400)
-        .json({
-          error: "Cannot add next visit while patient is still admitted.",
-        });
+      return res.status(400).json({
+        error: "Cannot add next visit while patient is still admitted.",
+      });
     }
 
     latestVisit.nextVisit = new Date(nextVisit);
@@ -227,25 +225,25 @@ const editVisit = async (req, res) => {
   try {
     const { visitId } = req.params;
     const updates = req.body;
+    console.log("Updates received:", updates);
 
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
 
-    // Update fields only if provided
     if (updates.reason !== undefined) visit.reason = updates.reason;
     if (updates.note !== undefined) visit.note = updates.note;
     if (updates.roomNo !== undefined) visit.roomNo = updates.roomNo;
     if (updates.doctor !== undefined) visit.doctor = updates.doctor;
     if (updates.therapist !== undefined) visit.therapist = updates.therapist;
-    if (updates.checkInTime !== undefined)
-      visit.checkInTime = new Date(updates.checkInTime);
-    if (updates.nextVisit !== undefined)
-      visit.nextVisit = new Date(updates.nextVisit);
+    if (updates.checkInTime) visit.checkInTime = new Date(updates.checkInTime);
+    if (updates.checkOutTime) visit.checkOutTime = new Date(updates.checkOutTime);
+    if (updates.nextVisit) visit.nextVisit = new Date(updates.nextVisit);
 
     await visit.save();
 
     res.status(200).json({ message: "Visit updated successfully", visit });
   } catch (err) {
+    console.error(err.message);
     res.status(400).json({ error: err.message });
   }
 };
@@ -300,5 +298,5 @@ module.exports = {
   getVisitsByType,
   editVisit,
   updateCaseStudy,
-  getCaseStudy
+  getCaseStudy,
 };

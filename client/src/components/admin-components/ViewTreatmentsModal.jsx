@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
-import "./ViewTreatmentsModal.css"
 
 export default function ViewTreatmentsModal({ visible, treatments, onClose }) {
   const [editing, setEditing] = useState(null);
@@ -42,7 +41,7 @@ export default function ViewTreatmentsModal({ visible, treatments, onClose }) {
   };
 
   return (
-    <div className="fullscreen-modal">
+    <div className="fullscreen-modal view-dt">
       <div className="modal-content">
         <h2>Daily Treatments</h2>
         {treatments.length === 0 ? (

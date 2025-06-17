@@ -21,6 +21,9 @@ export default function VisitCard({
     therapist: visit.therapist || "",
     roomNo: visit.roomNo || "",
     caseStudy: visit.caseStudy || "",
+    checkInTime: visit.checkInTime || "",
+    checkOutTime: visit.checkOutTime || "",
+    nextVisit: visit.nextVisit || "",
   });
 
   useEffect(() => {
@@ -31,6 +34,9 @@ export default function VisitCard({
       therapist: visit.therapist || "",
       roomNo: visit.roomNo || "",
       caseStudy: visit.caseStudy || "",
+      checkInTime: visit.checkInTime || "",
+      checkOutTime: visit.checkOutTime || "",
+      nextVisit: visit.nextVisit || "",
     });
   }, [visit]);
 
@@ -49,13 +55,27 @@ export default function VisitCard({
 
   const handleSave = async () => {
     try {
-      await axios.put(`${BASE_URL}/api/visits/edit/${visit._id}`, form, {
+      const updatedForm = {
+        ...form,
+        checkInTime: form.checkInTime
+          ? new Date(form.checkInTime).toISOString()
+          : null,
+        checkOutTime: form.checkOutTime
+          ? new Date(form.checkOutTime).toISOString()
+          : null,
+      };
+
+      console.log("Sending update:", updatedForm);
+
+      await axios.put(`${BASE_URL}/api/visits/edit/${visit._id}`, updatedForm, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+
       toast.success("Visit updated");
       setEditing(false);
       onRefresh();
-    } catch {
+    } catch (err) {
+      console.error(err.response?.data || err.message);
       toast.error("Failed to update visit");
     }
   };
@@ -70,7 +90,9 @@ export default function VisitCard({
         )}
 
         <div className="visit-left">
-          <p><strong>Type:</strong> {visit.type}</p>
+          <p>
+            <strong>Type:</strong> {visit.type}
+          </p>
 
           {editing ? (
             <>
@@ -99,46 +121,117 @@ export default function VisitCard({
             </>
           ) : (
             <>
-              <p><strong>Reason:</strong> {visit.reason}</p>
-              <p><strong>Note:</strong> {visit.note}</p>
-              <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
-              <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
+              <p>
+                <strong>Reason:</strong> {visit.reason}
+              </p>
+              <p>
+                <strong>Note:</strong> {visit.note}
+              </p>
+              <p>
+                <strong>Doctor:</strong> {visit.doctor || "Not Assigned"}
+              </p>
+              <p>
+                <strong>Therapist:</strong> {visit.therapist || "Not Assigned"}
+              </p>
             </>
           )}
         </div>
 
         <div className="visit-right">
           {editing ? (
-            <input
-              placeholder="Room No"
-              value={form.roomNo}
-              onChange={(e) => setForm({ ...form, roomNo: e.target.value })}
-            />
+            <>
+              <input
+                placeholder="Room No"
+                value={form.roomNo}
+                onChange={(e) => setForm({ ...form, roomNo: e.target.value })}
+              />
+
+              <label>
+                <strong>Check-In:</strong>
+              </label>
+              <input
+                type="datetime-local"
+                value={
+                  form.checkInTime
+                    ? new Date(form.checkInTime).toISOString().slice(0, 16)
+                    : ""
+                }
+                onChange={(e) =>
+                  setForm({ ...form, checkInTime: e.target.value })
+                }
+              />
+
+              <label>
+                <strong>Check-Out:</strong>
+              </label>
+              <input
+                type="datetime-local"
+                value={
+                  form.checkOutTime
+                    ? new Date(form.checkOutTime).toISOString().slice(0, 16)
+                    : ""
+                }
+                onChange={(e) =>
+                  setForm({ ...form, checkOutTime: e.target.value })
+                }
+              />
+            </>
           ) : (
-            <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
+            <>
+              <p>
+                <strong>Room No:</strong> {visit.roomNo || "Not Assigned"}
+              </p>
+              <p>
+                <strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}
+              </p>
+              <p>
+                <strong>Check-Out:</strong>{" "}
+                {visit.checkOutTime
+                  ? formatDate(visit.checkOutTime, true)
+                  : "Not yet"}
+              </p>
+            </>
           )}
 
-          <p><strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}</p>
-          <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime, true) : "Not yet"}</p>
-          <p><strong>Next Visit:</strong> {formatDate(visit.nextVisit)}</p>
+          <p>
+            <strong>Next Visit:</strong> {formatDate(visit.nextVisit)}
+          </p>
 
           <div className="button-group">
             {editing ? (
               <>
-                <button className="button-green" onClick={handleSave}>Save</button>
-                <button className="button-red" onClick={() => setEditing(false)}>Cancel</button>
+                <button className="button-green" onClick={handleSave}>
+                  Save
+                </button>
+                <button
+                  className="button-red"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </button>
               </>
             ) : (
               <>
                 {visit.type === "IP" && (
                   <>
-                    <button className="button-green" onClick={onAdd}>Add Daily Treatment</button>
-                    <button className="button-green" onClick={onView}>View Treatments</button>
+                    <button className="button-green" onClick={onAdd}>
+                      Add Daily Treatment
+                    </button>
+                    <button className="button-green" onClick={onView}>
+                      View Treatments
+                    </button>
                   </>
                 )}
-                <button className="button-indigo" onClick={() => setShowCaseModal(true)}>Case Study</button>
+                <button
+                  className="button-indigo"
+                  onClick={() => setShowCaseModal(true)}
+                >
+                  Case Study
+                </button>
                 {!visit.checkOutTime && (
-                  <button className="button-red" onClick={onCheckout}>Checkout</button>
+                  <button className="button-red" onClick={onCheckout}>
+                    Checkout
+                  </button>
                 )}
               </>
             )}
