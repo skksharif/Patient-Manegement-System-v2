@@ -61,6 +61,8 @@ const updateDailyTreatment = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   addDailyTreatment,
   getDailyTreatments,

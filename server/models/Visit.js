@@ -52,13 +52,17 @@ const visitSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  caseStudy: {
+    type: String,
+    default: null,
+  },
 
   // NEW FIELD FOR TREATMENTS
   dailyTreatments: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "DailyTreatment",
-    }
+    },
   ],
 
   createdAt: {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
+import CaseStudyModal from "./CaseStudyModal";
 import "./VisitCard.css";
 
 export default function VisitCard({
@@ -12,12 +13,14 @@ export default function VisitCard({
   onRefresh,
 }) {
   const [editing, setEditing] = useState(false);
+  const [showCaseModal, setShowCaseModal] = useState(false);
   const [form, setForm] = useState({
     reason: visit.reason || "",
     note: visit.note || "",
     doctor: visit.doctor || "",
     therapist: visit.therapist || "",
     roomNo: visit.roomNo || "",
+    caseStudy: visit.caseStudy || "",
   });
 
   useEffect(() => {
@@ -27,6 +30,7 @@ export default function VisitCard({
       doctor: visit.doctor || "",
       therapist: visit.therapist || "",
       roomNo: visit.roomNo || "",
+      caseStudy: visit.caseStudy || "",
     });
   }, [visit]);
 
@@ -57,89 +61,99 @@ export default function VisitCard({
   };
 
   return (
-    <div className="visit-card">
-      {/* Always show Edit button top-right */}
-      {!editing && (
-        <button className="edit-btn" onClick={() => setEditing(true)}>
-          Edit
-        </button>
-      )}
-
-      <div className="visit-left">
-        <p><strong>Type:</strong> {visit.type}</p>
-
-        {editing ? (
-          <>
-            <input
-              placeholder="Reason"
-              value={form.reason}
-              onChange={(e) => setForm({ ...form, reason: e.target.value })}
-            />
-            <input
-              placeholder="Note"
-              value={form.note}
-              onChange={(e) => setForm({ ...form, note: e.target.value })}
-            />
-            <input
-              placeholder="Doctor"
-              value={form.doctor}
-              onChange={(e) => setForm({ ...form, doctor: e.target.value })}
-            />
-            <input
-              placeholder="Therapist"
-              value={form.therapist}
-              onChange={(e) => setForm({ ...form, therapist: e.target.value })}
-            />
-          </>
-        ) : (
-          <>
-            <p><strong>Reason:</strong> {visit.reason}</p>
-            <p><strong>Note:</strong> {visit.note}</p>
-            <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
-            <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
-          </>
-        )}
-      </div>
-
-      <div className="visit-right">
-        {editing ? (
-          <input
-            placeholder="Room No"
-            value={form.roomNo}
-            onChange={(e) => setForm({ ...form, roomNo: e.target.value })}
-          />
-        ) : (
-          <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
+    <>
+      <div className="visit-card">
+        {!editing && (
+          <button className="edit-btn" onClick={() => setEditing(true)}>
+            Edit
+          </button>
         )}
 
-        <p><strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}</p>
-        <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime, true) : "Not yet"}</p>
-        <p><strong>Next Visit:</strong> {formatDate(visit.nextVisit)}</p>
+        <div className="visit-left">
+          <p><strong>Type:</strong> {visit.type}</p>
 
-        <div className="button-group">
           {editing ? (
             <>
-              <button onClick={handleSave}>Save</button>
-              <button onClick={() => setEditing(false)}>Cancel</button>
+              <input
+                placeholder="Reason"
+                value={form.reason}
+                onChange={(e) => setForm({ ...form, reason: e.target.value })}
+              />
+              <input
+                placeholder="Note"
+                value={form.note}
+                onChange={(e) => setForm({ ...form, note: e.target.value })}
+              />
+              <input
+                placeholder="Doctor"
+                value={form.doctor}
+                onChange={(e) => setForm({ ...form, doctor: e.target.value })}
+              />
+              <input
+                placeholder="Therapist"
+                value={form.therapist}
+                onChange={(e) =>
+                  setForm({ ...form, therapist: e.target.value })
+                }
+              />
             </>
           ) : (
             <>
-              {/* Always show View/Add for IP visits */}
-              {visit.type === "IP" && (
-                <>
-                  <button onClick={onAdd}>Add Daily Treatment</button>
-                  <button onClick={onView}>View Treatments</button>
-                </>
-              )}
-
-              {/* Show checkout only if not already done */}
-              {!visit.checkOutTime && (
-                <button onClick={onCheckout}>Checkout</button>
-              )}
+              <p><strong>Reason:</strong> {visit.reason}</p>
+              <p><strong>Note:</strong> {visit.note}</p>
+              <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
+              <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
             </>
           )}
         </div>
+
+        <div className="visit-right">
+          {editing ? (
+            <input
+              placeholder="Room No"
+              value={form.roomNo}
+              onChange={(e) => setForm({ ...form, roomNo: e.target.value })}
+            />
+          ) : (
+            <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
+          )}
+
+          <p><strong>Check-In:</strong> {formatDate(visit.checkInTime, true)}</p>
+          <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime, true) : "Not yet"}</p>
+          <p><strong>Next Visit:</strong> {formatDate(visit.nextVisit)}</p>
+
+          <div className="button-group">
+            {editing ? (
+              <>
+                <button className="button-green" onClick={handleSave}>Save</button>
+                <button className="button-red" onClick={() => setEditing(false)}>Cancel</button>
+              </>
+            ) : (
+              <>
+                {visit.type === "IP" && (
+                  <>
+                    <button className="button-green" onClick={onAdd}>Add Daily Treatment</button>
+                    <button className="button-green" onClick={onView}>View Treatments</button>
+                  </>
+                )}
+                <button className="button-indigo" onClick={() => setShowCaseModal(true)}>Case Study</button>
+                {!visit.checkOutTime && (
+                  <button className="button-red" onClick={onCheckout}>Checkout</button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {showCaseModal && (
+        <CaseStudyModal
+          visitId={visit._id}
+          existingCaseStudy={visit.caseStudy}
+          onClose={() => setShowCaseModal(false)}
+          onSaved={onRefresh}
+        />
+      )}
+    </>
   );
 }

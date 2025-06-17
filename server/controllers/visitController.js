@@ -3,14 +3,34 @@ const Visit = require("../models/Visit");
 // 1. Create a visit (OP or IP)
 const createVisit = async (req, res) => {
   try {
-    const { patientId, type, reason, note, roomNo, doctor, therapist, nextVisit, checkInTime } = req.body;
+    const {
+      patientId,
+      type,
+      reason,
+      note,
+      roomNo,
+      doctor,
+      therapist,
+      nextVisit,
+      checkInTime,
+    } = req.body;
 
     if (type === "IP") {
-      const activeIP = await Visit.findOne({ patientId, type: "IP", checkOutTime: null });
-      if (activeIP) return res.status(400).json({ error: "Patient is already admitted." });
+      const activeIP = await Visit.findOne({
+        patientId,
+        type: "IP",
+        checkOutTime: null,
+      });
+      if (activeIP)
+        return res.status(400).json({ error: "Patient is already admitted." });
 
-      const roomConflict = await Visit.findOne({ roomNo, type: "IP", checkOutTime: null });
-      if (roomConflict) return res.status(400).json({ error: "Room is already occupied." });
+      const roomConflict = await Visit.findOne({
+        roomNo,
+        type: "IP",
+        checkOutTime: null,
+      });
+      if (roomConflict)
+        return res.status(400).json({ error: "Room is already occupied." });
     }
 
     const newVisit = new Visit({
@@ -32,7 +52,6 @@ const createVisit = async (req, res) => {
   }
 };
 
-
 // 2. Checkout a patient (IP only)
 const checkoutVisit = async (req, res) => {
   try {
@@ -41,7 +60,8 @@ const checkoutVisit = async (req, res) => {
 
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
-    if (visit.checkOutTime) return res.status(400).json({ error: "Already checked out." });
+    if (visit.checkOutTime)
+      return res.status(400).json({ error: "Already checked out." });
 
     visit.checkOutTime = new Date();
     if (nextVisit) visit.nextVisit = new Date(nextVisit);
@@ -56,17 +76,23 @@ const checkoutVisit = async (req, res) => {
 // 3. Promote OP to IP (admit again)
 const promoteToInpatient = async (req, res) => {
   try {
-    const { patientId, reason, note, roomNo, doctor,therapist } = req.body;
+    const { patientId, reason, note, roomNo, doctor, therapist } = req.body;
 
     const existing = await Visit.findOne({
       patientId,
       type: "IP",
       checkOutTime: null,
     });
-    if (existing) return res.status(400).json({ error: "Patient is already admitted." });
+    if (existing)
+      return res.status(400).json({ error: "Patient is already admitted." });
 
-    const roomConflict = await Visit.findOne({ roomNo, type: "IP", checkOutTime: null });
-    if (roomConflict) return res.status(400).json({ error: "Room is already occupied." });
+    const roomConflict = await Visit.findOne({
+      roomNo,
+      type: "IP",
+      checkOutTime: null,
+    });
+    if (roomConflict)
+      return res.status(400).json({ error: "Room is already occupied." });
 
     const visit = new Visit({
       patientId,
@@ -92,11 +118,17 @@ const addNextVisit = async (req, res) => {
     const { patientId } = req.params;
     const { nextVisit } = req.body;
 
-    const latestVisit = await Visit.findOne({ patientId }).sort({ createdAt: -1 });
+    const latestVisit = await Visit.findOne({ patientId }).sort({
+      createdAt: -1,
+    });
     if (!latestVisit) return res.status(404).json({ error: "No visit found." });
 
     if (latestVisit.type === "IP" && !latestVisit.checkOutTime) {
-      return res.status(400).json({ error: "Cannot add next visit while patient is still admitted." });
+      return res
+        .status(400)
+        .json({
+          error: "Cannot add next visit while patient is still admitted.",
+        });
     }
 
     latestVisit.nextVisit = new Date(nextVisit);
@@ -155,21 +187,21 @@ const getUpcomingVisits = async (req, res) => {
     const visits = await Visit.aggregate([
       {
         $match: {
-          nextVisit: { $gte: now }
-        }
+          nextVisit: { $gte: now },
+        },
       },
       {
-        $sort: { nextVisit: -1 }
+        $sort: { nextVisit: -1 },
       },
       {
         $group: {
           _id: "$patientId",
-          visit: { $first: "$$ROOT" }
-        }
+          visit: { $first: "$$ROOT" },
+        },
       },
       {
-        $replaceRoot: { newRoot: "$visit" }
-      }
+        $replaceRoot: { newRoot: "$visit" },
+      },
     ]);
 
     const populated = await Visit.populate(visits, { path: "patientId" });
@@ -199,15 +231,16 @@ const editVisit = async (req, res) => {
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
 
-
     // Update fields only if provided
     if (updates.reason !== undefined) visit.reason = updates.reason;
     if (updates.note !== undefined) visit.note = updates.note;
     if (updates.roomNo !== undefined) visit.roomNo = updates.roomNo;
     if (updates.doctor !== undefined) visit.doctor = updates.doctor;
     if (updates.therapist !== undefined) visit.therapist = updates.therapist;
-    if (updates.checkInTime !== undefined) visit.checkInTime = new Date(updates.checkInTime);
-    if (updates.nextVisit !== undefined) visit.nextVisit = new Date(updates.nextVisit);
+    if (updates.checkInTime !== undefined)
+      visit.checkInTime = new Date(updates.checkInTime);
+    if (updates.nextVisit !== undefined)
+      visit.nextVisit = new Date(updates.nextVisit);
 
     await visit.save();
 
@@ -217,6 +250,43 @@ const editVisit = async (req, res) => {
   }
 };
 
+// 11. Update case study for a visit
+const updateCaseStudy = async (req, res) => {
+  try {
+    const { visitId } = req.params;
+    const { caseStudy } = req.body;
+
+    const visit = await Visit.findByIdAndUpdate(
+      visitId,
+      { caseStudy },
+      { new: true }
+    );
+
+    if (!visit) {
+      return res.status(404).json({ message: "Visit not found" });
+    }
+
+    res.status(200).json({ message: "Case study updated", visit });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// 12. Get case study of a visit
+const getCaseStudy = async (req, res) => {
+  try {
+    const { visitId } = req.params;
+    const visit = await Visit.findById(visitId).select("caseStudy");
+
+    if (!visit) {
+      return res.status(404).json({ message: "Visit not found" });
+    }
+
+    res.status(200).json({ caseStudy: visit.caseStudy });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 module.exports = {
   createVisit,
@@ -228,5 +298,7 @@ module.exports = {
   getAllCheckedOutPatients,
   getUpcomingVisits,
   getVisitsByType,
-  editVisit
+  editVisit,
+  updateCaseStudy,
+  getCaseStudy
 };

@@ -12,6 +12,8 @@ const {
   getAllActiveInpatients,
   getAllCheckedOutPatients,
   editVisit,
+  updateCaseStudy,
+  getCaseStudy,
 } = require("../controllers/visitController");
 
 router.post("/create", auth, createVisit);                      // OP or IP
@@ -24,6 +26,12 @@ router.get("/checkedout-patients", auth, getAllCheckedOutPatients); // All IPs w
 router.get("/upcoming", auth, getUpcomingVisits);    // Upcoming Visits
 router.get("/type/:type", auth, getVisitsByType);               // By Type
 router.put("/edit/:visitId", editVisit);
+// PUT: Update case study
+router.put("/case-study/:visitId", updateCaseStudy);
+
+// GET: Get case study
+router.get("/case-study/:visitId", getCaseStudy);
+
 
 
 

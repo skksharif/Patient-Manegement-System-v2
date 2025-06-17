@@ -28,25 +28,9 @@
 .button-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 5px;
 }
 
-.button-group button {
-  background: #4caf50;
-  color: white;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.button-group button:hover {
-  background: #388e3c;
-}
 
 /* Modal styles */
 .modal-overlay {
@@ -62,7 +46,7 @@
 .popup-modal {
   background: #ffffff;
   padding: 32px;
-  width: 95%;
+  width: 100%;
   max-width: 500px;
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
