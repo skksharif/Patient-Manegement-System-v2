@@ -12,7 +12,7 @@
 }
 
 /* Headers */
-.section-title {
+.patient-profile-container .section-title {
   color: #1b5e20;
   font-size: 24px;
   font-weight: 700;
@@ -21,7 +21,7 @@
   margin-bottom: 10px;
 }
 
-.section-header {
+.patient-profile-container .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,24 +40,30 @@
   transition: background-color 0.3s ease;
 }
 
-.checkin-button {
+.patient-profile-container .checkin-button {
   background-color: #2e7d32;
 }
-.checkin-button:hover {
+.patient-profile-container .checkin-button:hover {
   background-color: #1b5e20;
 }
 
-.nextvisit-button {
+.patient-profile-container .nextvisit-button {
   background-color: #558b2f;
 }
-.nextvisit-button:hover {
+.patient-profile-container .nextvisit-button:hover {
   background-color: #33691e;
 }
 
-.promote-button {
+.patient-profile-container .promote-button {
   background-color: #f57c00;
 }
-.promote-button:hover {
+.patient-profile-container .promote-button:hover {
+  background-color: #e65100;
+}
+.patient-profile-container .edit-button {
+  background-color: #f75c09;
+}
+.patient-profile-container .edit-button:hover {
   background-color: #e65100;
 }
 

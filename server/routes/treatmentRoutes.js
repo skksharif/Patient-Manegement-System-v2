@@ -6,11 +6,9 @@ const {
   updateDailyTreatment
 } = require("../controllers/treatmentController");
 
-// POST /api/treatments/:visitId/daily-treatment
 router.post("/:visitId/daily-treatment", addDailyTreatment);
-
-// GET /api/treatments/:visitId/daily-treatment
 router.get("/:visitId/daily-treatment", getDailyTreatments);
-router.put("/:treatmentId", updateDailyTreatment); 
+router.put("/update/:treatmentId", updateDailyTreatment);
+
 
 module.exports = router;

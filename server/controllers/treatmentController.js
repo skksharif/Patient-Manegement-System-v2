@@ -8,6 +8,9 @@ const addDailyTreatment = async (req, res) => {
 
   try {
     const visit = await Visit.findById(visitId);
+    if (!visit) {
+      return res.status(404).json({ error: "Visit not found" });
+    }
 
     const treatment = new DailyTreatment({
       visitId,
@@ -23,6 +26,7 @@ const addDailyTreatment = async (req, res) => {
 
     res.status(201).json({ message: "Daily treatment added successfully" });
   } catch (err) {
+    console.error("Add Treatment Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -35,6 +39,7 @@ const getDailyTreatments = async (req, res) => {
     const treatments = await DailyTreatment.find({ visitId }).sort({ date: 1 });
     res.status(200).json(treatments);
   } catch (err) {
+    console.error("Fetch Treatments Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -57,14 +62,13 @@ const updateDailyTreatment = async (req, res) => {
     await treatment.save();
     res.status(200).json({ message: "Treatment updated successfully" });
   } catch (err) {
+    console.error("Update Treatment Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-
-
 module.exports = {
   addDailyTreatment,
   getDailyTreatments,
-  updateDailyTreatment, 
+  updateDailyTreatment,
 };

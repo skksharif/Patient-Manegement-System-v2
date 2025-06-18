@@ -13,7 +13,11 @@ export default function VisitHistory({ visits, refreshVisits }) {
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
   const [nextVisitDate, setNextVisitDate] = useState("");
   const [activeVisitId, setActiveVisitId] = useState(null);
-  const [dailyForm, setDailyForm] = useState({ date: "", morning: "", evening: "" });
+  const [dailyForm, setDailyForm] = useState({
+    date: "",
+    morning: "",
+    evening: "",
+  });
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [treatments, setTreatments] = useState([]);
@@ -24,7 +28,9 @@ export default function VisitHistory({ visits, refreshVisits }) {
       await axios.put(
         `${BASE_URL}/api/visits/checkout/${visitId}`,
         { nextVisit: nextVisitDate || null },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       toast.success("Checked out successfully");
       refreshVisits(); // ✅ Refresh visits after checkout
@@ -45,25 +51,43 @@ export default function VisitHistory({ visits, refreshVisits }) {
         `${BASE_URL}/api/treatments/${activeVisitId}/daily-treatment`,
         {
           date: dailyForm.date,
-          morning: { therapy: dailyForm.morning, therapist: "" },
-          evening: { therapy: dailyForm.evening, therapist: "" },
+          morning: {
+            therapy: dailyForm.morning,
+            therapist: dailyForm.morningTherapist || "",
+          },
+          evening: {
+            therapy: dailyForm.evening,
+            therapist: dailyForm.eveningTherapist || "",
+          },
         },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       toast.success("Treatment added!");
       setShowAddModal(false);
-      setDailyForm({ date: "", morning: "", evening: "" });
+      setDailyForm({
+        date: "",
+        morning: "",
+        evening: "",
+        morningTherapist: "",
+        eveningTherapist: "",
+      });
       setActiveVisitId(null);
-    } catch {
+    } catch (err) {
+      console.error("Treatment Add Error:", err);
       toast.error("Error adding treatment");
     }
   };
 
   const handleViewTreatments = async (visitId) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/treatments/${visitId}/daily-treatment`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await axios.get(
+        `${BASE_URL}/api/treatments/${visitId}/daily-treatment`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       setTreatments(res.data);
       setShowViewModal(true);
     } catch {
