@@ -6,17 +6,26 @@
 }
 
 :root {
-  /* Color System */
-  --primary-50: #f0f9f0;
-  --primary-100: #dcf2dc;
-  --primary-200: #bce5bc;
-  --primary-300: #8dd18d;
-  --primary-400: #5cb85c;
-  --primary-500: #3d8b3d;
-  --primary-600: #2e7d32;
-  --primary-700: #1b5e20;
-  --primary-800: #0d4f0d;
-  --primary-900: #064206;
+  /* Olive Green Color System */
+  --primary-50: #f4f8f2;
+  --primary-100: #e6f0e1;
+  --primary-200: #cde1c4;
+  --primary-300: #a4c896;
+  --primary-400: #7ba968;
+  --primary-500: #4b753c;
+  --primary-600: #3c5e3c;
+  --primary-700: #2d4a2d;
+  --primary-800: #1e351e;
+  --primary-900: #0f200f;
+
+  /* Secondary Olive Shades */
+  --secondary-500: #6f8c45;
+  --secondary-600: #5a7237;
+  --secondary-700: #455829;
+
+  /* Warning/Accent Colors */
+  --warning-500: #b86b10;
+  --warning-600: #9a5a0e;
 
   /* Neutral Colors */
   --gray-50: #fafafa;
@@ -32,7 +41,6 @@
 
   /* Semantic Colors */
   --success: #4caf50;
-  --warning: #ff9800;
   --error: #f44336;
   --info: #2196f3;
 
@@ -78,16 +86,31 @@
   --leading-relaxed: 1.625;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+html, body {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
-  background-color: var(--gray-50);
+  background-color: #f4f4dc;
   color: var(--gray-900);
   line-height: var(--leading-normal);
-  overflow-x: hidden;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 /* Utility Classes */
@@ -147,12 +170,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gray-400);
+  background: var(--primary-400);
   border-radius: var(--radius-md);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-500);
+  background: var(--primary-500);
 }
 
 /* Loading Animation */
@@ -204,32 +227,41 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--primary-600);
+  background-color: var(--primary-500);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-700);
+  background-color: var(--primary-600);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-  background-color: var(--gray-200);
-  color: var(--gray-800);
+  background-color: var(--secondary-500);
+  color: white;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--gray-300);
+  background-color: var(--secondary-600);
 }
 
 .btn-success {
-  background-color: var(--success);
+  background-color: var(--primary-600);
   color: white;
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: var(--primary-700);
+}
+
+.btn-warning {
+  background-color: var(--warning-500);
+  color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background-color: var(--warning-600);
 }
 
 .btn-danger {
@@ -298,7 +330,7 @@ body {
 .form-input:focus {
   outline: none;
   border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgb(61 139 61 / 0.1);
+  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
 }
 
 .form-input::placeholder {

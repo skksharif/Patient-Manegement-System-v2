@@ -2,6 +2,8 @@
   max-width: 1400px;
   margin: 0 auto;
   animation: fadeIn 0.6s ease-out;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .dashboard-header {
@@ -11,7 +13,7 @@
 .dashboard-title {
   font-size: var(--font-size-4xl);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--primary-800);
   margin-bottom: var(--space-2);
   display: flex;
   align-items: center;
@@ -83,15 +85,15 @@
 }
 
 .stat-card.success::before {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
 }
 
 .stat-card.warning::before {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
 }
 
 .stat-card.info::before {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
 }
 
 .stat-header {
@@ -124,15 +126,15 @@
 }
 
 .stat-card.success .stat-icon {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
 }
 
 .stat-card.warning .stat-icon {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
 }
 
 .stat-card.info .stat-icon {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
 }
 
 .stat-value {
@@ -153,7 +155,7 @@
 }
 
 .stat-change.positive {
-  color: #059669;
+  color: var(--primary-600);
 }
 
 .stat-change.negative {
@@ -176,7 +178,7 @@
 .charts-title {
   font-size: var(--font-size-3xl);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--primary-800);
   margin-bottom: var(--space-2);
 }
 
@@ -212,7 +214,7 @@
 .chart-title {
   font-size: var(--font-size-xl);
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--primary-800);
   margin-bottom: var(--space-1);
   display: flex;
   align-items: center;
@@ -246,7 +248,7 @@
 .quick-actions-title {
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--primary-800);
   margin: 0;
 }
 
@@ -290,7 +292,7 @@
 .action-title {
   font-size: var(--font-size-base);
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--primary-800);
   margin: 0;
 }
 
@@ -383,6 +385,7 @@
   font-size: var(--font-size-xl);
   font-weight: 600;
   margin-bottom: var(--space-2);
+  color: var(--primary-700);
 }
 
 .empty-state-description {

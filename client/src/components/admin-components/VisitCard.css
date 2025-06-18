@@ -3,19 +3,21 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  background: #f8fdf8;
-  border-left: 4px solid #2e7d32;
+  background: white;
+  border-left: 4px solid var(--primary-600);
   padding: 16px 20px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
   position: relative;
   margin-bottom: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-200);
 }
 
 .visit-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
+  border-left-color: var(--primary-700);
 }
 
 /* Column styles */
@@ -30,8 +32,13 @@
 .visit-right p {
   margin: 5px 0;
   font-size: 14px;
-  color: #263a2c;
+  color: var(--gray-800);
   line-height: 1.4;
+}
+
+.visit-left p strong,
+.visit-right p strong {
+  color: var(--primary-700);
 }
 
 /* Inputs */
@@ -41,16 +48,27 @@
   padding: 8px 10px;
   font-size: 14px;
   margin-bottom: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-lg);
   background: #fff;
   transition: border 0.2s ease;
 }
 
 .visit-left input:focus,
 .visit-right input:focus {
-  border-color: #2e7d32;
+  border-color: var(--primary-500);
   outline: none;
+  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
+}
+
+.visit-left label,
+.visit-right label {
+  font-weight: 600;
+  color: var(--primary-700);
+  font-size: 13px;
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
 /* Edit button top-right */
@@ -58,19 +76,21 @@
   position: absolute;
   top: 14px;
   right: 16px;
-  background-color: #1976d2; /* blue */
+  background-color: var(--secondary-500);
   color: white;
   padding: 6px 10px;
   font-size: 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .edit-btn:hover {
-  background-color: #125ea4;
+  background-color: var(--secondary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Buttons */
@@ -86,39 +106,47 @@
   font-size: 13px;
   font-weight: 600;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   color: #fff;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 /* Color-specific button classes */
 .button-green {
-  background-color: #4caf50;
+  background-color: var(--primary-500);
 }
 .button-green:hover {
-  background-color: #388e3c;
+  background-color: var(--primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .button-red {
-  background-color: #e53935;
+  background-color: var(--error);
 }
 .button-red:hover {
-  background-color: #c62828;
+  background-color: #d32f2f;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .button-blue {
-  background-color: #1976d2;
+  background-color: var(--info);
 }
 .button-blue:hover {
-  background-color: #1565c0;
+  background-color: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .button-indigo {
-  background-color: #5c6bc0;
+  background-color: var(--secondary-500);
 }
 .button-indigo:hover {
-  background-color: #3949ab;
+  background-color: var(--secondary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Responsive */

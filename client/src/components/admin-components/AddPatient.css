@@ -2,18 +2,19 @@
   max-width: 500px;
   margin: 10px auto;
   background: #fff;
-  border: 1px solid #d6f5d6;
+  border: 1px solid var(--primary-200);
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 128, 0, 0.05);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
   font-family: Arial, sans-serif;
 }
 
 .form-title {
   text-align: center;
-  font-size: 24px;
-  color: #2e7d32;
+  font-size: var(--font-size-3xl);
+  color: var(--primary-700);
   margin-bottom: 20px;
+  font-weight: 700;
 }
 
 .patient-form input,
@@ -22,34 +23,44 @@
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
-  border: 1px solid #a5d6a7;
-  border-radius: 6px;
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-lg);
   font-size: 16px;
   transition: border 0.2s;
+  background: white;
 }
 
 .patient-form input:focus,
 .patient-form select:focus,
 .patient-form textarea:focus {
   outline: none;
-  border-color: #388e3c;
-  box-shadow: 0 0 0 2px #c8e6c9;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
 }
 
 .patient-form button {
   width: 100%;
   padding: 14px;
-  background-color: #4caf50;
+  background-color: var(--primary-500);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   color: white;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .patient-form button:hover {
-  background-color: #388e3c;
+  background-color: var(--primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.patient-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .form-error {
@@ -57,22 +68,22 @@
   color: #c62828;
   padding: 10px;
   margin-bottom: 15px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
 }
 
 .form-success {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: rgb(75 117 60 / 0.1);
+  color: var(--primary-700);
   padding: 10px;
   margin-bottom: 15px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
 }
 
 .spinner {
   width: 20px;
   height: 20px;
   border: 3px solid white;
-  border-top: 3px solid #388e3c;
+  border-top: 3px solid var(--primary-600);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: inline-block;
