@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import PatientProfile from "./admin-components/PatientProfile";
 import { useNavigate } from "react-router-dom";
 import { NavLink, Routes, Route } from "react-router-dom";
 import {
   FaUserPlus,
-  FaUserInjured,
   FaUsers,
   FaHospitalUser,
   FaUserCheck,
   FaCalendarAlt,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
+import { FiMessageSquare } from "react-icons/fi";
 import "./AdminHome.css";
 import Home from "./admin-components/Home";
 import AddPatient from "./admin-components/AddPatient";
@@ -22,132 +24,137 @@ import Upcoming from "./admin-components/Upcoming";
 import Enquiry from "./admin-components/Enquiry";
 
 export default function AdminHome() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
   if (!localStorage.getItem("token")) {
     return (
-      <div>
-        <center>
-          <h1>
-            <h1>Not Authorized</h1>
-          </h1>
-        </center>
+      <div className="unauthorized-container">
+        <div className="unauthorized-content">
+          <h1>Access Denied</h1>
+          <p>You need to be logged in to access this page.</p>
+          <button onClick={() => navigate("/login-portal")} className="btn btn-primary">
+            Go to Login
+          </button>
+        </div>
       </div>
     );
   }
+
   return (
-    <>
-      <div className="main-container">
-        <aside>
-          <aside className={`sidebar`}>
-            <nav className="sidebar-nav">
-              <div className="sidebar-header">
-                <img src="/doc-logo.png" alt="" />
-              </div>
+    <div className="admin-container">
+      {/* Mobile Sidebar Toggle */}
+      <button
+        className="mobile-sidebar-toggle"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        {sidebarOpen ? <FaTimes /> : <FaBars />}
+      </button>
 
-              <NavLink
-                to="/admin-home"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <MdDashboard />
-                <span>Dashboard</span>
-              </NavLink>
-              <NavLink
-                to="/admin-home/enquiries"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaUserPlus />
-                <span>Enquiries</span>
-              </NavLink>
-              <NavLink
-                to="/admin-home/add-patient"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaUserPlus />
-                <span>Add Patient</span>
-              </NavLink>
+      {/* Mobile Overlay */}
+      <div
+        className={`mobile-sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={closeSidebar}
+      />
 
-              <NavLink
-                to="/admin-home/all-patients"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaUsers />
-                <span>All Patients</span>
-              </NavLink>
+      {/* Sidebar */}
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <img src="/doc-logo.png" alt="Prakruthi Ashram" className="sidebar-logo" />
+          <h2 className="sidebar-title">Admin Portal</h2>
+        </div>
 
-              <NavLink
-                to="/admin-home/checkedin"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaHospitalUser />
-                <span>Checked In</span>
-              </NavLink>
+        <nav className="sidebar-nav">
+          <NavLink
+            to="/admin-home"
+            end
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <MdDashboard className="nav-item-icon" />
+            <span className="nav-item-text">Dashboard</span>
+          </NavLink>
 
-              <NavLink
-                to="/admin-home/checkedout"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaUserCheck />
-                <span>Checked Out</span>
-              </NavLink>
+          <NavLink
+            to="/admin-home/enquiries"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FiMessageSquare className="nav-item-icon" />
+            <span className="nav-item-text">Enquiries</span>
+          </NavLink>
 
-              <NavLink
-                to="/admin-home/upcoming-visits"
-                end
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FaCalendarAlt />
-                <span>Upcoming Visits</span>
-              </NavLink>
-            </nav>
+          <NavLink
+            to="/admin-home/add-patient"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FaUserPlus className="nav-item-icon" />
+            <span className="nav-item-text">Add Patient</span>
+          </NavLink>
 
-            <div
-              className="logout-btn"
-              onClick={handleLogout}
-              title="Logout"
-              style={{
-                display: "flex",
-                justifyContent: "start",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
-            >
-              <CiLogout size={24} /> Logout
-            </div>
-          </aside>
-        </aside>
-        <main className="main-board">
+          <NavLink
+            to="/admin-home/all-patients"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FaUsers className="nav-item-icon" />
+            <span className="nav-item-text">All Patients</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin-home/checkedin"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FaHospitalUser className="nav-item-icon" />
+            <span className="nav-item-text">Active Patients</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin-home/checkedout"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FaUserCheck className="nav-item-icon" />
+            <span className="nav-item-text">Discharged</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin-home/upcoming-visits"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={closeSidebar}
+          >
+            <FaCalendarAlt className="nav-item-icon" />
+            <span className="nav-item-text">Upcoming Visits</span>
+          </NavLink>
+        </nav>
+
+        <div className="logout-section">
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            title="Sign out of admin portal"
+          >
+            <CiLogout className="logout-icon" />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        <div className="main-board">
           <Routes>
             <Route path="" element={<Home />} />
             <Route path="enquiries" element={<Enquiry />} />
@@ -158,8 +165,8 @@ export default function AdminHome() {
             <Route path="checkedout" element={<Checkedout />} />
             <Route path="upcoming-visits" element={<Upcoming />} />
           </Routes>
-        </main>
-      </div>
-    </>
+        </div>
+      </main>
+    </div>
   );
 }
