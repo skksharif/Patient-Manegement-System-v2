@@ -40,7 +40,7 @@ export default function CaseStudyModal({ visitId, existingCaseStudy, onClose, on
           <button onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save"}
           </button>
-          <button onClick={onClose}>Cancel</button>
+          <button onClick={onClose} className="case-close">Close</button>
         </div>
       </div>
     </div>

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import CheckoutModal from "./CheckoutModal";
-import AddTreatmentModal from "./AddTreatmentModal";
-import ViewTreatmentsModal from "./ViewTreatmentsModal";
 import VisitCard from "./VisitCard";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -136,26 +134,6 @@ export default function VisitHistory({ visits, refreshVisits }) {
           document.body.classList.remove("overflow-hidden");
         }}
         onConfirm={() => handleCheckOut(showCheckoutModal)}
-      />
-
-      <AddTreatmentModal
-        visible={showAddModal}
-        form={dailyForm}
-        setForm={setDailyForm}
-        onCancel={() => {
-          setShowAddModal(false);
-          document.body.classList.remove("overflow-hidden");
-        }}
-        onSave={handleAddTreatment}
-      />
-
-      <ViewTreatmentsModal
-        visible={showViewModal}
-        treatments={treatments}
-        onClose={() => {
-          setShowViewModal(false);
-          document.body.classList.remove("overflow-hidden");
-        }}
       />
     </div>
   );

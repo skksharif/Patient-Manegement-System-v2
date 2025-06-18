@@ -93,15 +93,6 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="login-footer">
-          <div className="security-badge">
-            <FiShield />
-            <span>Secure Login</span>
-          </div>
-          <p className="login-footer-text">
-            Your data is protected with enterprise-grade security
-          </p>
-        </div>
       </div>
     </div>
   );

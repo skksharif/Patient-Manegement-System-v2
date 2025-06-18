@@ -227,9 +227,6 @@ export default function Home() {
           <MdDashboard className="dashboard-title-icon" />
           Dashboard Overview
         </h1>
-        <p className="dashboard-subtitle">
-          Welcome back! Here's what's happening at Prakruthi Ashramam today.
-        </p>
       </div>
 
       {/* Stats Grid */}
@@ -243,14 +240,7 @@ export default function Home() {
               </div>
             </div>
             <p className="stat-value">{card.value}</p>
-            <div className={`stat-change ${card.change.type}`}>
-              {card.change.type === 'positive' && <FaArrowUp />}
-              {card.change.type === 'negative' && <FaArrowDown />}
-              {card.change.type === 'neutral' && <FaMinus />}
-              <span>
-                {card.change.value > 0 ? `+${card.change.value}` : card.change.value} this week
-              </span>
-            </div>
+           
           </div>
         ))}
       </div>

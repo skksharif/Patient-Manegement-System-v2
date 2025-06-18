@@ -8,7 +8,7 @@ const {
 
 router.post("/:visitId/daily-treatment", addDailyTreatment);
 router.get("/:visitId/daily-treatment", getDailyTreatments);
-router.put("/update/:treatmentId", updateDailyTreatment);
+router.put("/:treatmentId", updateDailyTreatment);
 
 
 module.exports = router;

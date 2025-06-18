@@ -1,6 +1,5 @@
 .hero-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,7 +28,7 @@
 }
 
 .hero-logo {
-  max-width: 500px;
+  max-width: 400px;
   width: 100%;
   height: auto;
   margin-bottom: var(--space-8);
@@ -38,7 +37,7 @@
 }
 
 .hero-title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-2xl);
   font-weight: 700;
   color: var(--primary-800);
   margin-bottom: var(--space-4);
@@ -47,7 +46,7 @@
 }
 
 .hero-subtitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-l);
   color: var(--gray-600);
   margin-bottom: var(--space-10);
   line-height: var(--leading-relaxed);
