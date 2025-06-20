@@ -181,7 +181,7 @@ export default function Enquiry() {
                       <strong>Date:</strong> {new Date(e.date).toLocaleString()}
                     </p>
                     <button className="enquiry-edit-btn" onClick={() => handleEdit(e)}>
-                      ✏️ Edit
+                       Edit
                     </button>
                   </div>
                 ))}
