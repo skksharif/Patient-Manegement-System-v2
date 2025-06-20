@@ -9,72 +9,50 @@ import "./VisitHistory.css";
 export default function VisitHistory({ visits, refreshVisits }) {
   const [loadingVisitId, setLoadingVisitId] = useState(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
+  const [checkoutDate, setCheckoutDate] = useState("");
   const [nextVisitDate, setNextVisitDate] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
   const [activeVisitId, setActiveVisitId] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [treatments, setTreatments] = useState([]);
+
   const [dailyForm, setDailyForm] = useState({
     date: "",
     morning: "",
     evening: "",
+    morningTherapist: "",
+    eveningTherapist: "",
   });
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [treatments, setTreatments] = useState([]);
 
-  const handleCheckOut = async (visitId) => {
+  const handleCheckOut = async (visitId, addNextVisit) => {
+    if (!checkoutDate) {
+      toast.error("Please select a checkout date");
+      return;
+    }
+
     setLoadingVisitId(visitId);
     try {
       await axios.put(
         `${BASE_URL}/api/visits/checkout/${visitId}`,
-        { nextVisit: nextVisitDate || null },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          nextVisit: addNextVisit ? nextVisitDate : null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       toast.success("Checked out successfully");
-      refreshVisits(); // ✅ Refresh visits after checkout
-    } catch {
-      toast.error("Failed to check out");
-    } finally {
-      setLoadingVisitId(null);
       setShowCheckoutModal(null);
+      setCheckoutDate("");
       setNextVisitDate("");
       document.body.classList.remove("overflow-hidden");
-    }
-  };
-
-  const handleAddTreatment = async () => {
-    if (!dailyForm.date) return toast.error("Date required");
-    try {
-      await axios.post(
-        `${BASE_URL}/api/treatments/${activeVisitId}/daily-treatment`,
-        {
-          date: dailyForm.date,
-          morning: {
-            therapy: dailyForm.morning,
-            therapist: dailyForm.morningTherapist || "",
-          },
-          evening: {
-            therapy: dailyForm.evening,
-            therapist: dailyForm.eveningTherapist || "",
-          },
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      toast.success("Treatment added!");
-      setShowAddModal(false);
-      setDailyForm({
-        date: "",
-        morning: "",
-        evening: "",
-        morningTherapist: "",
-        eveningTherapist: "",
-      });
-      setActiveVisitId(null);
+      refreshVisits();
     } catch (err) {
-      console.error("Treatment Add Error:", err);
-      toast.error("Error adding treatment");
+      toast.error(err.response?.data?.error || "Failed to check out");
+    } finally {
+      setLoadingVisitId(null);
     }
   };
 
@@ -83,7 +61,9 @@ export default function VisitHistory({ visits, refreshVisits }) {
       const res = await axios.get(
         `${BASE_URL}/api/treatments/${visitId}/daily-treatment`,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       setTreatments(res.data);
@@ -117,23 +97,29 @@ export default function VisitHistory({ visits, refreshVisits }) {
                 handleViewTreatments(visit._id);
                 document.body.classList.add("overflow-hidden");
               }}
-              onRefresh={refreshVisits} // ✅ Pass down refresh method
+              onRefresh={refreshVisits}
             />
           ))}
         </div>
       )}
 
+      {/* Checkout Modal */}
       <CheckoutModal
-        visible={showCheckoutModal}
+        visible={!!showCheckoutModal}
         loading={loadingVisitId === showCheckoutModal}
-        date={nextVisitDate}
-        setDate={setNextVisitDate}
+        date={checkoutDate}
+        setDate={setCheckoutDate}
+        nextVisit={nextVisitDate}
+        setNextVisit={setNextVisitDate}
         onCancel={() => {
           setShowCheckoutModal(null);
+          setCheckoutDate("");
           setNextVisitDate("");
           document.body.classList.remove("overflow-hidden");
         }}
-        onConfirm={() => handleCheckOut(showCheckoutModal)}
+        onConfirm={(addNextVisit) =>
+          handleCheckOut(showCheckoutModal, addNextVisit)
+        }
       />
     </div>
   );

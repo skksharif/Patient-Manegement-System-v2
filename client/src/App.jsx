@@ -4,9 +4,13 @@ import Hero from "./components/Hero";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import AdminHome from "./components/AdminHome";
+import { ToastContainer } from "react-toastify";
 function App() {
   return (
     <>
+          {/* your app components */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Hero />} />

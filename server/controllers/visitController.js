@@ -56,22 +56,34 @@ const createVisit = async (req, res) => {
 const checkoutVisit = async (req, res) => {
   try {
     const { visitId } = req.params;
-    const { nextVisit } = req.body;
+    const { nextVisit, checkoutDate } = req.body;
 
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
     if (visit.checkOutTime)
       return res.status(400).json({ error: "Already checked out." });
 
-    visit.checkOutTime = new Date();
-    if (nextVisit) visit.nextVisit = new Date(nextVisit);
-    await visit.save();
+    const checkout = checkoutDate ? new Date(checkoutDate) : new Date();
 
+    if (nextVisit) {
+      const next = new Date(nextVisit);
+      if (next <= checkout) {
+        return res.status(400).json({
+          error: "Next visit must be after checkout date.",
+        });
+      }
+      visit.nextVisit = next;
+    }
+
+    visit.checkOutTime = checkout;
+
+    await visit.save();
     res.status(200).json(visit);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 // 3. Promote OP to IP (admit again)
 const promoteToInpatient = async (req, res) => {
