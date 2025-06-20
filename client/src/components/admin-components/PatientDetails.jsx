@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
 import DownloadPatientHistory from "./DownloadPatientHistory";
@@ -17,11 +19,11 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
     type: "",
     reason: "",
     note: "",
-    nextVisit: "",
+    nextVisit: null,
     roomNo: "",
     doctor: "",
     therapist: "",
-    checkInTime: "",
+    checkInTime: null,
   });
 
   const hasActiveIP = visits.some((v) => v.type === "IP" && !v.checkOutTime);
@@ -33,11 +35,11 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
       type: "",
       reason: "",
       note: "",
-      nextVisit: "",
+      nextVisit: null,
       roomNo: "",
       doctor: "",
       therapist: "",
-      checkInTime: "",
+      checkInTime: null,
     });
   };
 
@@ -47,11 +49,11 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
       type: "",
       reason: "",
       note: "",
-      nextVisit: "",
+      nextVisit: null,
       roomNo: "",
       doctor: "",
       therapist: "",
-      checkInTime: "",
+      checkInTime: null,
     });
   };
 
@@ -83,33 +85,21 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       };
 
+      const payload = {
+        ...modalData,
+        nextVisit: modalData.nextVisit ? modalData.nextVisit.toISOString() : null,
+        checkInTime: modalData.checkInTime ? modalData.checkInTime.toISOString() : null,
+        patientId,
+      };
+
       if (modalType === "visit") {
-        await axios.post(
-          `${BASE_URL}/api/visits/create`,
-          { patientId, ...modalData },
-          { headers }
-        );
+        await axios.post(`${BASE_URL}/api/visits/create`, payload, { headers });
         toast.success("Visit added");
       } else if (modalType === "nextVisit") {
-        await axios.put(
-          `${BASE_URL}/api/visits/next-visit/${patientId}`,
-          { nextVisit: modalData.nextVisit },
-          { headers }
-        );
+        await axios.put(`${BASE_URL}/api/visits/next-visit/${patientId}`, { nextVisit: payload.nextVisit }, { headers });
         toast.success("Next visit added");
       } else if (modalType === "promote") {
-        await axios.post(
-          `${BASE_URL}/api/visits/promote-ip`,
-          {
-            patientId,
-            reason: modalData.reason,
-            note: modalData.note,
-            roomNo: modalData.roomNo,
-            doctor: modalData.doctor,
-            therapist: modalData.therapist,
-          },
-          { headers }
-        );
+        await axios.post(`${BASE_URL}/api/visits/promote-ip`, payload, { headers });
         toast.success("Promoted to Inpatient");
       }
 
@@ -199,105 +189,52 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
                 <option value="IP">IP</option>
               </select>
             </label>
-            <input
-              type="text"
-              name="doctor"
-              placeholder="Doctor Name"
-              value={modalData.doctor}
-              onChange={handleModalChange}
-            />
-            <input
-              type="text"
-              name="reason"
-              placeholder="Reason"
-              value={modalData.reason}
-              onChange={handleModalChange}
-            />
-            <input
-              type="text"
-              name="therapist"
-              placeholder="Therapist Name"
-              value={modalData.therapist}
-              onChange={handleModalChange}
-            />
-            <label>
-              <textarea
-                name="note"
-                placeholder="Note"
-                value={modalData.note}
-                onChange={handleModalChange}
-              />
-            </label>
+            <input name="doctor" placeholder="Doctor Name" value={modalData.doctor} onChange={handleModalChange} />
+            <input name="reason" placeholder="Reason" value={modalData.reason} onChange={handleModalChange} />
+            <input name="therapist" placeholder="Therapist Name" value={modalData.therapist} onChange={handleModalChange} />
+            <textarea name="note" placeholder="Note" value={modalData.note} onChange={handleModalChange} />
 
             {modalData.type === "IP" && (
               <>
-                <input
-                  type="text"
-                  name="roomNo"
-                  placeholder="Room Number"
-                  value={modalData.roomNo}
-                  onChange={handleModalChange}
+                <input name="roomNo" placeholder="Room Number" value={modalData.roomNo} onChange={handleModalChange} />
+                <label>Check-In Time:</label>
+                <DatePicker
+                  selected={modalData.checkInTime}
+                  onChange={(date) => setModalData({ ...modalData, checkInTime: date })}
+                  showTimeSelect
+                  timeFormat="hh:mm aa"
+                  timeIntervals={15}
+                  dateFormat="dd/MM/yyyy h:mm aa"
+                  placeholderText="Select check-in time"
+                  className="datepicker-input"
+                  popperPlacement="top"
                 />
-                <label>
-                  <input
-                    type="datetime-local"
-                    name="checkInTime"
-                    value={modalData.checkInTime}
-                    onChange={handleModalChange}
-                  />
-                </label>
               </>
             )}
           </>
         )}
 
         {modalType === "nextVisit" && (
-          <input
-            type="date"
-            name="nextVisit"
-            value={modalData.nextVisit}
-            onChange={handleModalChange}
-          />
+          <div>
+            <label>Next Visit Date:</label>
+            <DatePicker
+              selected={modalData.nextVisit}
+              onChange={(date) => setModalData({ ...modalData, nextVisit: date })}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Select next visit date"
+              className="datepicker-input"
+              popperPlacement="top"
+            />
+          </div>
         )}
 
         {modalType === "promote" && (
           <>
-            <input
-              type="text"
-              name="reason"
-              placeholder="Reason for IP"
-              value={modalData.reason}
-              onChange={handleModalChange}
-            />
-            <label>
-              <textarea
-                name="note"
-                placeholder="Note"
-                value={modalData.note}
-                onChange={handleModalChange}
-              />
-            </label>
-            <input
-              type="text"
-              name="roomNo"
-              placeholder="Room Number"
-              value={modalData.roomNo}
-              onChange={handleModalChange}
-            />
-            <input
-              type="text"
-              name="doctor"
-              placeholder="Doctor Name"
-              value={modalData.doctor}
-              onChange={handleModalChange}
-            />
-            <input
-              type="text"
-              name="therapist"
-              placeholder="Therapist Name"
-              value={modalData.therapist}
-              onChange={handleModalChange}
-            />
+            <input name="reason" placeholder="Reason for IP" value={modalData.reason} onChange={handleModalChange} />
+            <textarea name="note" placeholder="Note" value={modalData.note} onChange={handleModalChange} />
+            <input name="roomNo" placeholder="Room Number" value={modalData.roomNo} onChange={handleModalChange} />
+            <input name="doctor" placeholder="Doctor Name" value={modalData.doctor} onChange={handleModalChange} />
+            <input name="therapist" placeholder="Therapist Name" value={modalData.therapist} onChange={handleModalChange} />
           </>
         )}
 
@@ -305,9 +242,7 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
           <button onClick={handleSubmitModal} className="save-button" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
-          <button onClick={closeModal} className="edit-button">
-            Cancel
-          </button>
+          <button onClick={closeModal} className="edit-button">Cancel</button>
         </div>
       </Modal>
     </div>

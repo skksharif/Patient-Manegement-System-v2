@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { createEnquiry, getAllEnquiries } = require("../controllers/enquiryController");
+const {
+  createEnquiry,
+  getAllEnquiries,
+  updateEnquiry,
+} = require("../controllers/enquiryController");
 
-// POST /api/enquiries
 router.post("/", createEnquiry);
-
-// GET /api/enquiries
 router.get("/", getAllEnquiries);
+router.put("/:id", updateEnquiry);
 
 module.exports = router;

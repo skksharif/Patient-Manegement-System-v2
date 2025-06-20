@@ -1,7 +1,8 @@
 /* Main container */
 .visit-history-container {
-  padding: 24px;
-  max-height: 80vh;
+  padding: 10px;
+  margin-bottom: 10px;
+  height: 75vh;
   overflow-y: auto;
   background: #fff;
   border-radius: var(--radius-2xl);

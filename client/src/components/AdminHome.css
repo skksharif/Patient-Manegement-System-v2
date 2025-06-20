@@ -162,7 +162,7 @@
 
 .main-board {
   flex: 1;
-  padding: var(--space-6);
+  padding: var(--space-1);
   overflow-y: hidden;
   background: #f4f4dc;
 }

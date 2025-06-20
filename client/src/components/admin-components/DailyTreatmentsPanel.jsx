@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
 import "./DailyTreatmentsPanel.css";
 
 export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
   const [form, setForm] = useState({
-    date: "",
+    date: null,
     morning: "",
     morningTherapist: "",
     evening: "",
@@ -39,7 +41,7 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
 
     try {
       const payload = {
-        date: form.date,
+        date: form.date.toISOString(),
         morning: {
           therapy: form.morning,
           therapist: form.morningTherapist,
@@ -78,7 +80,7 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
   const handleEdit = (t) => {
     setEditingId(t._id);
     setForm({
-      date: t.date,
+      date: new Date(t.date),
       morning: t.morning.therapy,
       morningTherapist: t.morning.therapist || "",
       evening: t.evening.therapy,
@@ -89,7 +91,7 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
   const resetForm = () => {
     setEditingId(null);
     setForm({
-      date: "",
+      date: null,
       morning: "",
       morningTherapist: "",
       evening: "",
@@ -116,11 +118,16 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
         </h3>
 
         <label className="form-label">Date</label>
-        <input
-          type="date"
+        <DatePicker
+          selected={form.date}
+          onChange={(date) => setForm({ ...form, date })}
+          showTimeSelect
+          timeFormat="hh:mm aa"
+          timeIntervals={15}
+          dateFormat="dd/MM/yyyy h:mm aa"
+          placeholderText="Select date and time"
           className="form-input"
-          value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value })}
+          popperPlacement="top"
         />
 
         <label className="form-label">Morning Therapy</label>
@@ -199,7 +206,14 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
                     .map((t) => (
                       <tr key={t._id} onClick={() => handleEdit(t)}>
-                        <td>{new Date(t.date).toLocaleDateString()}</td>
+                        <td>{new Date(t.date).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true
+                        })}</td>
                         <td>{t.morning.therapy || "—"}</td>
                         <td>{t.morning.therapist || "—"}</td>
                         <td>{t.evening.therapy || "—"}</td>

@@ -130,11 +130,11 @@ export default function Home() {
       {
         data: [stats.opCount, stats.ipCount],
         backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
+          'rgba(255, 85, 0, 0.8)',
           'rgba(34, 197, 94, 0.8)',
         ],
         borderColor: [
-          'rgba(59, 130, 246, 1)',
+          'rgba(255, 85, 0, 0.8)',
           'rgba(34, 197, 94, 1)',
         ],
         borderWidth: 2,

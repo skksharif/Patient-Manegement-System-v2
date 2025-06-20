@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function CheckoutModal({
   visible,
@@ -20,10 +22,16 @@ export default function CheckoutModal({
         <h3>Confirm Checkout</h3>
 
         <label>Checkout Date</label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+        <DatePicker
+          selected={date}
+          onChange={(date) => setDate(date)}
+          showTimeSelect
+          timeFormat="hh:mm aa"
+          timeIntervals={15}
+          dateFormat="MMMM d, yyyy h:mm aa"
+          className="datepicker-input"
+          placeholderText="Select checkout date"
+          popperPlacement="top"
         />
 
         <div className="checkbox-group">
@@ -41,20 +49,23 @@ export default function CheckoutModal({
         {addNextVisit && (
           <>
             <label>Next Visit Date</label>
-            <input
-              type="date"
-              value={nextVisit}
-              onChange={(e) => setNextVisit(e.target.value)}
+            <DatePicker
+              selected={nextVisit}
+              onChange={(date) => setNextVisit(date)}
+              showTimeSelect
+              timeFormat="hh:mm aa"
+              timeIntervals={15}
+              dateFormat="MMMM d, yyyy h:mm aa"
+              className="datepicker-input"
+              placeholderText="Select next visit date"
+              popperPlacement="top"
             />
           </>
         )}
 
         <div className="modal-buttons">
           <button onClick={onCancel}>Cancel</button>
-          <button
-            onClick={() => onConfirm(addNextVisit)}
-            disabled={loading}
-          >
+          <button onClick={() => onConfirm(addNextVisit)} disabled={loading}>
             {loading ? "Checking out..." : "Confirm"}
           </button>
         </div>
