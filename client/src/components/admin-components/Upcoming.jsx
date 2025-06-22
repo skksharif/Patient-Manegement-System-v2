@@ -11,6 +11,18 @@ export default function Upcoming() {
   const [search, setSearch] = useState("");
   const [searchBy, setSearchBy] = useState("aadhar");
   const navigate = useNavigate();
+  const formatDate = (date, withTime = false) => {
+    if (!date) return "Not Available";
+    const d = new Date(date);
+    return d.toLocaleString("en-IN", {
+      hour: withTime ? "numeric" : undefined,
+      minute: withTime ? "2-digit" : undefined,
+      hour12: true,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   useEffect(() => {
     const fetchUpcomingVisits = async () => {
@@ -46,7 +58,12 @@ export default function Upcoming() {
     return false;
   });
 
-  if (loading) return <div><Loader/></div>;
+  if (loading)
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="checkedin-list">
@@ -85,10 +102,19 @@ export default function Upcoming() {
                 navigate(`/admin-home/patient/${visit.patientId?._id}`)
               }
             >
-              <p><strong>Name:</strong> {visit.patientId?.name || "Unknown"}</p>
-              <p><strong>Phone:</strong> {visit.patientId?.phone || "N/A"}</p>
-              <p><strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}</p>
-              <p><strong>Next Visit:</strong> {new Date(visit.nextVisit).toLocaleString()}</p>
+              <p>
+                <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
+              </p>
+              <p>
+                <strong>Phone:</strong> {visit.patientId?.phone || "N/A"}
+              </p>
+              <p>
+                <strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}
+              </p>
+              <p>
+                <strong>Next Visit:</strong>{" "}
+                {formatDate(visit.nextVisit)}
+              </p>
             </div>
           ))
         )}

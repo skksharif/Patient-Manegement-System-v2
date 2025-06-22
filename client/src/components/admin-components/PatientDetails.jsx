@@ -152,9 +152,6 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
             <>
               <button className="checkin-button" onClick={() => openModal("visit")}>New Visit</button>
               <button className="nextvisit-button" onClick={() => openModal("nextVisit")}>Add Next Visit</button>
-              {latestVisit && latestVisit.type === "OP" && !latestVisit.checkOutTime && (
-                <button className="promote-button" onClick={() => openModal("promote")}>Promote to Inpatient</button>
-              )}
             </>
           ) : (
             <span className="status-info">Currently Admitted (IP)</span>
@@ -191,7 +188,6 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
             </label>
             <input name="doctor" placeholder="Doctor Name" value={modalData.doctor} onChange={handleModalChange} />
             <input name="reason" placeholder="Reason" value={modalData.reason} onChange={handleModalChange} />
-            <input name="therapist" placeholder="Therapist Name" value={modalData.therapist} onChange={handleModalChange} />
             <textarea name="note" placeholder="Note" value={modalData.note} onChange={handleModalChange} />
 
             {modalData.type === "IP" && (
@@ -228,15 +224,7 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
           </div>
         )}
 
-        {modalType === "promote" && (
-          <>
-            <input name="reason" placeholder="Reason for IP" value={modalData.reason} onChange={handleModalChange} />
-            <textarea name="note" placeholder="Note" value={modalData.note} onChange={handleModalChange} />
-            <input name="roomNo" placeholder="Room Number" value={modalData.roomNo} onChange={handleModalChange} />
-            <input name="doctor" placeholder="Doctor Name" value={modalData.doctor} onChange={handleModalChange} />
-            <input name="therapist" placeholder="Therapist Name" value={modalData.therapist} onChange={handleModalChange} />
-          </>
-        )}
+        
 
         <div className="modal-buttons">
           <button onClick={handleSubmitModal} className="save-button" disabled={isSubmitting}>

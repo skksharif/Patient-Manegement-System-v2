@@ -7,6 +7,22 @@ import "./Enquiry.css";
 import BASE_URL from "../config";
 
 export default function Enquiry() {
+  const formatDate = (date) => {
+    if (!date) return "Not Available";
+    const d = new Date(date);
+    const dateStr = d.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const timeStr = d.toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return `${dateStr}  |  ${timeStr}`;
+  };
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -85,7 +101,9 @@ export default function Enquiry() {
       <div className="enquiry-layout">
         <div className="enquiry-form-section">
           <div className="enquiry-card">
-            <h2 className="enquiry-title">{editId ? "Edit" : "Submit New"} Enquiry</h2>
+            <h2 className="enquiry-title">
+              {editId ? "Edit" : "Submit New"} Enquiry
+            </h2>
             <form className="enquiry-form-horizontal" onSubmit={handleSubmit}>
               <input
                 type="text"
@@ -113,12 +131,20 @@ export default function Enquiry() {
                 showTimeSelect
                 timeFormat="hh:mm aa"
                 timeIntervals={15}
-                dateFormat="MMMM d, yyyy h:mm aa"
+                dateFormat="dd/MM/yyyy    |    h:mm aa"
                 className="enquiry-input"
               />
               <div style={{ display: "flex", gap: "1rem" }}>
-                <button type="submit" disabled={loading} className="enquiry-button">
-                  {loading ? "Submitting..." : editId ? "Update Enquiry" : "Submit Enquiry"}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="enquiry-button"
+                >
+                  {loading
+                    ? "Submitting..."
+                    : editId
+                    ? "Update Enquiry"
+                    : "Submit Enquiry"}
                 </button>
                 {editId && (
                   <button
@@ -126,7 +152,12 @@ export default function Enquiry() {
                     className="enquiry-button cancel"
                     onClick={() => {
                       setEditId(null);
-                      setForm({ name: "", phone: "", enquiry: "", date: new Date() });
+                      setForm({
+                        name: "",
+                        phone: "",
+                        enquiry: "",
+                        date: new Date(),
+                      });
                     }}
                   >
                     Cancel
@@ -144,13 +175,17 @@ export default function Enquiry() {
                   type="text"
                   placeholder={`Search by ${search.field}`}
                   value={search.term}
-                  onChange={(e) => setSearch({ ...search, term: e.target.value })}
+                  onChange={(e) =>
+                    setSearch({ ...search, term: e.target.value })
+                  }
                   className="enquiry-input"
                 />
                 <div className="search-btn-opt">
                   <select
                     value={search.field}
-                    onChange={(e) => setSearch({ ...search, field: e.target.value })}
+                    onChange={(e) =>
+                      setSearch({ ...search, field: e.target.value })
+                    }
                     className="enquiry-select"
                   >
                     <option value="name">Search by Name</option>
@@ -174,14 +209,23 @@ export default function Enquiry() {
               <div className="enquiry-list-items">
                 {filtered.map((e, i) => (
                   <div key={e._id} className="enquiry-card-item">
-                    <h4 className="enquiry-card-title">{i + 1}. {e.name}</h4>
-                    <p><strong>Phone:</strong> {e.phone}</p>
-                    <p><strong>Enquiry:</strong> {e.enquiry}</p>
-                    <p className="enquiry-date">
-                      <strong>Date:</strong> {new Date(e.date).toLocaleString()}
+                    <h4 className="enquiry-card-title">
+                      {i + 1}. {e.name}
+                    </h4>
+                    <p>
+                      <strong>Phone:</strong> {e.phone}
                     </p>
-                    <button className="enquiry-edit-btn" onClick={() => handleEdit(e)}>
-                       Edit
+                    <p>
+                      <strong>Enquiry:</strong> {e.enquiry}
+                    </p>
+                    <p className="enquiry-date">
+                      <strong>Date:</strong> {formatDate(e.date)}
+                    </p>
+                    <button
+                      className="enquiry-edit-btn"
+                      onClick={() => handleEdit(e)}
+                    >
+                      Edit
                     </button>
                   </div>
                 ))}

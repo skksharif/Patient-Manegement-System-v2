@@ -12,6 +12,19 @@ export default function Checkedout() {
   const [searchBy, setSearchBy] = useState("aadhar");
   const navigate = useNavigate();
 
+    const formatDate = (date, withTime = false) => {
+    if (!date) return "Not Available";
+    const d = new Date(date);
+    return d.toLocaleString("en-IN", {
+      hour: withTime ? "numeric" : undefined,
+      minute: withTime ? "2-digit" : undefined,
+      hour12: true,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   useEffect(() => {
     const fetchCheckedOutPatients = async () => {
       try {
@@ -105,11 +118,11 @@ export default function Checkedout() {
 
               <p>
                 <strong>Check-In:</strong>{" "}
-                {new Date(visit.checkInTime).toLocaleString()}
+                {formatDate(visit.checkInTime)}
               </p>
               <p>
                 <strong>Check-Out:</strong>{" "}
-                {new Date(visit.checkOutTime).toLocaleString()}
+                {formatDate(visit.checkOutTime)}
               </p>
             </div>
           ))

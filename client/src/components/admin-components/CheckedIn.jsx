@@ -12,6 +12,19 @@ export default function AllActiveInpatients() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const formatDate = (date, withTime = false) => {
+    if (!date) return "Not Available";
+    const d = new Date(date);
+    return d.toLocaleString("en-IN", {
+      hour: withTime ? "numeric" : undefined,
+      minute: withTime ? "2-digit" : undefined,
+      hour12: true,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   useEffect(() => {
     const fetchActiveInpatients = async () => {
       try {
@@ -98,14 +111,11 @@ export default function AllActiveInpatients() {
             <p>
               <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
             </p>
-            <p>
-              <strong>Admitted On:</strong>{" "}
-              {new Date(visit.createdAt).toLocaleDateString()}
-            </p>
+          
             <p>
               <strong>Check-In:</strong>{" "}
               {visit.checkInTime
-                ? new Date(visit.checkInTime).toLocaleTimeString()
+                ? formatDate(visit.checkInTime)
                 : "Not Joined"}
             </p>
             <p>

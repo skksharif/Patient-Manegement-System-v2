@@ -205,7 +205,7 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
                   {filtered
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
                     .map((t) => (
-                      <tr key={t._id} onClick={() => handleEdit(t)}>
+                      <tr key={t._id} onDoubleClick={() => handleEdit(t)}>
                         <td>{new Date(t.date).toLocaleString("en-IN", {
                           day: "2-digit",
                           month: "2-digit",

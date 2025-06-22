@@ -37,19 +37,21 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
     });
   }, [visit]);
 
-  const formatDate = (date, withTime = false) => {
+  const formatDate = (date) => {
     if (!date) return "Not Available";
     const d = new Date(date);
-    return d.toLocaleString("en-IN", {
-      hour: withTime ? "numeric" : undefined,
-      minute: withTime ? "2-digit" : undefined,
-      hour12: true,
+    const dateStr = d.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     });
+    const timeStr = d.toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return `${dateStr}  |  ${timeStr}`;
   };
-
   const handleSave = async () => {
     try {
       const payload = {
@@ -101,13 +103,6 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 value={form.doctor}
                 onChange={(e) => setForm({ ...form, doctor: e.target.value })}
               />
-              <input
-                placeholder="Therapist"
-                value={form.therapist}
-                onChange={(e) =>
-                  setForm({ ...form, therapist: e.target.value })
-                }
-              />
             </>
           ) : (
             <>
@@ -119,9 +114,6 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
               </p>
               <p>
                 <strong>Doctor:</strong> {visit.doctor || "Not Assigned"}
-              </p>
-              <p>
-                <strong>Therapist:</strong> {visit.therapist || "Not Assigned"}
               </p>
             </>
           )}
@@ -145,7 +137,7 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 showTimeSelect
                 timeFormat="hh:mm aa"
                 timeIntervals={15}
-                dateFormat="dd/MM/yyyy h:mm aa"
+                dateFormat="dd-MM-yyyy | h:mm aa"
                 placeholderText="Select check-in time"
                 popperPlacement="top"
                 className="datepicker-input"
