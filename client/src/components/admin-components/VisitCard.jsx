@@ -137,7 +137,7 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 showTimeSelect
                 timeFormat="hh:mm aa"
                 timeIntervals={15}
-                dateFormat="dd-MM-yyyy | h:mm aa"
+                dateFormat="dd/MM/yyyy | h:mm aa"
                 placeholderText="Select check-in time"
                 popperPlacement="top"
                 className="datepicker-input"
