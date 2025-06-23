@@ -9,10 +9,10 @@ export default function Checkedout() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [searchBy, setSearchBy] = useState("aadhar");
+  const [searchBy, setSearchBy] = useState("phone");
   const navigate = useNavigate();
 
-    const formatDate = (date, withTime = false) => {
+  const formatDate = (date, withTime = false) => {
     if (!date) return "Not Available";
     const d = new Date(date);
     return d.toLocaleString("en-IN", {
@@ -86,9 +86,9 @@ export default function Checkedout() {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
         >
-          <option value="aadhar">Aadhar</option>
           <option value="phone">Phone</option>
           <option value="name">Name</option>
+          <option value="aadhar">Aadhar</option>
         </select>
       </div>
 
@@ -117,12 +117,10 @@ export default function Checkedout() {
               </p>
 
               <p>
-                <strong>Check-In:</strong>{" "}
-                {formatDate(visit.checkInTime)}
+                <strong>Check-In:</strong> {formatDate(visit.checkInTime)}
               </p>
               <p>
-                <strong>Check-Out:</strong>{" "}
-                {formatDate(visit.checkOutTime)}
+                <strong>Check-Out:</strong> {formatDate(visit.checkOutTime)}
               </p>
             </div>
           ))

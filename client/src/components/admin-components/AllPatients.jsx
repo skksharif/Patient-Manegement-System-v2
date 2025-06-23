@@ -10,7 +10,7 @@ export default function AllPatients() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchBy, setSearchBy] = useState("aadhar");
+  const [searchBy, setSearchBy] = useState("phone");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,10 +36,10 @@ export default function AllPatients() {
 
   const filteredPatients = patients.filter((patient) => {
     const term = searchTerm.toLowerCase();
-    if (searchBy === "aadhar")
-      return patient.aadharNo.toLowerCase().includes(term);
     if (searchBy === "phone") return patient.phone.toLowerCase().includes(term);
     if (searchBy === "name") return patient.name.toLowerCase().includes(term);
+    if (searchBy === "aadhar") return patient.aadharNo.toLowerCase().includes(term);
+
     return false;
   });
 
@@ -60,9 +60,9 @@ export default function AllPatients() {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
         >
-          <option value="aadhar">Aadhar</option>
           <option value="phone">Phone</option>
           <option value="name">Name</option>
+          <option value="aadhar">Aadhar</option>
         </select>
       </div>
 
@@ -72,7 +72,7 @@ export default function AllPatients() {
         </div>
       ) : (
         <div className="patient-cards">
-          {filteredPatients.map((patient) => (
+          {(filteredPatients.length!=0) ? (filteredPatients.map((patient) => (
             <div
               key={patient._id}
               className="patient-card"
@@ -83,10 +83,10 @@ export default function AllPatients() {
                 <strong>Phone:</strong> {patient.phone}
               </p>
               <p>
-                <strong>Aadhar:</strong> {patient.aadharNo}
+                <strong>Aadhar:</strong> {(patient.aadharNo)?(patient.aadharNo):(<span>Not Set</span>)}
               </p>
             </div>
-          ))}
+          ))):(<span style={{ padding: "110px 0", color: "red" }}>No Records Found</span>)}
         </div>
       )}
     </div>

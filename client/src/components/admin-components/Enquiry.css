@@ -29,6 +29,10 @@
 .enquiry-list{
   padding: 10px 20px;
 }
+.enquiry-list-header{
+  display: flex;
+  justify-content: space-between;
+}
 .enquiry-card {
   background: #ffffff;
   border-radius: var(--radius-2xl);
@@ -58,9 +62,17 @@
 }
 
 .enquiry-input,
-.enquiry-textarea,
-.enquiry-select {
+.enquiry-textarea{
   width: 100%;
+  padding: 10px;
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  color: var(--gray-800);
+  transition: all 0.3s ease;
+}
+.enquiry-select {
+    width: 35%;
   padding: 10px;
   border: 1px solid var(--primary-300);
   border-radius: var(--radius-lg);

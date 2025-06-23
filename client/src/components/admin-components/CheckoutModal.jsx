@@ -21,7 +21,6 @@ export default function CheckoutModal({
       <div className="popup-modal">
         <h3>Confirm Checkout</h3>
 
-        <label>Checkout Date</label>
         <DatePicker
           selected={date}
           onChange={(date) => setDate(date)}
@@ -52,10 +51,8 @@ export default function CheckoutModal({
             <DatePicker
               selected={nextVisit}
               onChange={(date) => setNextVisit(date)}
-              showTimeSelect
-              timeFormat="hh:mm aa"
-              timeIntervals={15}
-              dateFormat="MMMM d, yyyy h:mm aa"
+          
+              dateFormat="dd/MM/YYYY"
               className="datepicker-input"
               placeholderText="Select next visit date"
               popperPlacement="top"

@@ -121,11 +121,8 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
         <DatePicker
           selected={form.date}
           onChange={(date) => setForm({ ...form, date })}
-          showTimeSelect
-          timeFormat="hh:mm aa"
-          timeIntervals={15}
-          dateFormat="dd/MM/yyyy h:mm aa"
-          placeholderText="Select date and time"
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Select date"
           className="form-input"
           popperPlacement="top"
         />
@@ -206,14 +203,13 @@ export default function DailyTreatmentsPanel({ visible, visitId, onClose }) {
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
                     .map((t) => (
                       <tr key={t._id} onDoubleClick={() => handleEdit(t)}>
-                        <td>{new Date(t.date).toLocaleString("en-IN", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true
-                        })}</td>
+                        <td>
+                          {new Date(t.date).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                        </td>
                         <td>{t.morning.therapy || "—"}</td>
                         <td>{t.morning.therapist || "—"}</td>
                         <td>{t.evening.therapy || "—"}</td>

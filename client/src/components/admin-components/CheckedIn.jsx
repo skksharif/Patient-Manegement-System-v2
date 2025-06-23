@@ -69,13 +69,6 @@ export default function AllActiveInpatients() {
       </div>
     );
 
-  if (filteredPatients.length === 0)
-    return (
-      <div style={{ padding: "110px 0", color: "red" }}>
-        No active in-patients found.
-      </div>
-    );
-
   return (
     <div className="checkedin-list">
       <h2>All Active In-Patients</h2>
@@ -100,32 +93,36 @@ export default function AllActiveInpatients() {
       </div>
 
       <div className="checkedin-container">
-        {filteredPatients.map((visit) => (
-          <div
-            className="checkedin-card"
-            key={visit._id}
-            onClick={() =>
-              navigate(`/admin-home/patient/${visit.patientId?._id}`)
-            }
-          >
-            <p>
-              <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
-            </p>
-          
-            <p>
-              <strong>Check-In:</strong>{" "}
-              {visit.checkInTime
-                ? formatDate(visit.checkInTime)
-                : "Not Joined"}
-            </p>
-            <p>
-              <strong>Phone:</strong> {visit.patientId?.phone || "N/A"}
-            </p>
-            <p>
-              <strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}
-            </p>
-          </div>
-        ))}
+        {filteredPatients.length === 0 ? (
+          <span style={{ padding: "110px 0", color: "red" }}>No Active Patients</span>
+        ) : (
+          filteredPatients.map((visit) => (
+            <div
+              className="checkedin-card"
+              key={visit._id}
+              onClick={() =>
+                navigate(`/admin-home/patient/${visit.patientId?._id}`)
+              }
+            >
+              <p>
+                <strong>Name:</strong> {visit.patientId?.name || "Unknown"}
+              </p>
+
+              <p>
+                <strong>Check-In:</strong>{" "}
+                {visit.checkInTime
+                  ? formatDate(visit.checkInTime)
+                  : "Not Joined"}
+              </p>
+              <p>
+                <strong>Phone:</strong> {visit.patientId?.phone || "N/A"}
+              </p>
+              <p>
+                <strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}
+              </p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

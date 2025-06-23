@@ -57,7 +57,21 @@
   border-color: var(--primary-500);
   box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
 }
+input[type="checkbox"] {
+  width: 30px;
+  padding:0;
+  margin: 0;
+}
+.checkbox-group label{
+  margin: 0;
+  padding: 0;
+}
 
+.checkbox-group{
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
 /* Cards Container */
 .checkedout-container {
   display: flex;

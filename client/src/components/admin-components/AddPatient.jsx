@@ -21,11 +21,9 @@ export default function AddPatient() {
 
   const validate = () => {
     const { name, phone, aadharNo, gender, age, address } = form;
-    if (!name || !phone || !aadharNo || !gender || !age || !address)
+    if (!name || !phone || !gender || !address)
       return "All fields are required";
     if (!/^\d{10}$/.test(phone)) return "Phone must be 10 digits";
-    if (!/^\d{12}$/.test(aadharNo)) return "Aadhar must be 12 digits";
-    if (age <= 0) return "Age must be a positive number";
     return "";
   };
 
@@ -82,7 +80,7 @@ export default function AddPatient() {
         />
         <input
           name="aadharNo"
-          placeholder="Aadhar Number (12 digits)"
+          placeholder="Aadhar Number (12 digits)  |  Optional"
           value={form.aadharNo}
           onChange={handleChange}
         />
@@ -95,7 +93,7 @@ export default function AddPatient() {
         <input
           name="age"
           type="number"
-          placeholder="Age"
+          placeholder="Age | Optional"
           value={form.age}
           onChange={handleChange}
         />

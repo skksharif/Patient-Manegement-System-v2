@@ -1,9 +1,13 @@
 import React from "react";
 import "./Hero.css";
 import { FiUser, FiShield, FiClock, FiHeart } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Hero() {
+  const navigate = useNavigate();
+  if(localStorage.getItem('token')){
+    navigate('/admin-home');
+  }
   return (
     <div className="hero-container">
 

@@ -8,14 +8,14 @@ import { ToastContainer } from "react-toastify";
 function App() {
   return (
     <>
-          {/* your app components */}
+      {/* your app components */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/login-portal" element={<Login />} />
-          <Route path="/admin-home/*" element={<AdminHome/>}/>
+          <Route path="/admin-home/*" element={<AdminHome />} />
         </Routes>
       </BrowserRouter>
     </>

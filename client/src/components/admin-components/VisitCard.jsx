@@ -52,6 +52,7 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
     });
     return `${dateStr}  |  ${timeStr}`;
   };
+
   const handleSave = async () => {
     try {
       const payload = {
@@ -93,11 +94,13 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
               />
-              <input
-                placeholder="Note"
-                value={form.note}
-                onChange={(e) => setForm({ ...form, note: e.target.value })}
-              />
+              {visit.type === "OP" && (
+                <input
+                  placeholder="Note"
+                  value={form.note}
+                  onChange={(e) => setForm({ ...form, note: e.target.value })}
+                />
+              )}
               <input
                 placeholder="Doctor"
                 value={form.doctor}
@@ -109,9 +112,11 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
               <p>
                 <strong>Reason:</strong> {visit.reason}
               </p>
-              <p>
-                <strong>Note:</strong> {visit.note}
-              </p>
+              {visit.type === "OP" && (
+                <p>
+                  <strong>Note:</strong> {visit.note}
+                </p>
+              )}
               <p>
                 <strong>Doctor:</strong> {visit.doctor || "Not Assigned"}
               </p>
@@ -120,14 +125,13 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
         </div>
 
         <div className="visit-right">
-          {editing ? (
+          {editing && visit.type !== "OP" && (
             <>
               <input
                 placeholder="Room No"
                 value={form.roomNo}
                 onChange={(e) => setForm({ ...form, roomNo: e.target.value })}
               />
-
               <label>
                 <strong>Check-In:</strong>
               </label>
@@ -138,11 +142,8 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 timeFormat="hh:mm aa"
                 timeIntervals={15}
                 dateFormat="dd/MM/yyyy | h:mm aa"
-                placeholderText="Select check-in time"
-                popperPlacement="top"
                 className="datepicker-input"
               />
-
               <label>
                 <strong>Check-Out:</strong>
               </label>
@@ -152,13 +153,13 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 showTimeSelect
                 timeFormat="hh:mm aa"
                 timeIntervals={15}
-                dateFormat="dd/MM/yyyy h:mm aa"
-                placeholderText="Select check-out time"
-                popperPlacement="top"
+                dateFormat="dd/MM/yyyy | h:mm aa"
                 className="datepicker-input"
               />
             </>
-          ) : (
+          )}
+
+          {!editing && visit.type !== "OP" && (
             <>
               <p>
                 <strong>Room No:</strong> {visit.roomNo || "Not Assigned"}
@@ -176,7 +177,12 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
           )}
 
           <p>
-            <strong>Next Visit:</strong> {formatDate(visit.nextVisit)}
+            <strong>Next Visit:</strong>
+            {(visit.nextVisit) ? (new Date(visit.nextVisit).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })):(<span>Not Set</span>)}
           </p>
 
           <div className="button-group">
@@ -208,7 +214,6 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
                 >
                   Case Study
                 </button>
-                {/* Show Checkout only if not already checked out and not OP */}
                 {visit.type !== "OP" && !visit.checkOutTime && (
                   <button className="button-red" onClick={onCheckout}>
                     Checkout

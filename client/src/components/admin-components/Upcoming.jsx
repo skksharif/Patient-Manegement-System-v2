@@ -9,7 +9,7 @@ export default function Upcoming() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [searchBy, setSearchBy] = useState("aadhar");
+  const [searchBy, setSearchBy] = useState("phone");
   const navigate = useNavigate();
   const formatDate = (date, withTime = false) => {
     if (!date) return "Not Available";
@@ -82,9 +82,9 @@ export default function Upcoming() {
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value)}
         >
-          <option value="aadhar">Aadhar</option>
           <option value="phone">Phone</option>
           <option value="name">Name</option>
+          <option value="aadhar">Aadhar</option>
         </select>
       </div>
 
@@ -112,8 +112,7 @@ export default function Upcoming() {
                 <strong>Aadhar No:</strong> {visit.patientId?.aadharNo || "N/A"}
               </p>
               <p>
-                <strong>Next Visit:</strong>{" "}
-                {formatDate(visit.nextVisit)}
+                <strong>Next Visit:</strong> {formatDate(visit.nextVisit)}
               </p>
             </div>
           ))

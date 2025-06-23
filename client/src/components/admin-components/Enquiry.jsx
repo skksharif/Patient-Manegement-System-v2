@@ -15,12 +15,7 @@ export default function Enquiry() {
       month: "2-digit",
       year: "numeric",
     });
-    const timeStr = d.toLocaleTimeString("en-IN", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-    return `${dateStr}  |  ${timeStr}`;
+    return dateStr;
   };
 
   const [form, setForm] = useState({
@@ -128,10 +123,7 @@ export default function Enquiry() {
               <DatePicker
                 selected={form.date}
                 onChange={(date) => setForm({ ...form, date })}
-                showTimeSelect
-                timeFormat="hh:mm aa"
-                timeIntervals={15}
-                dateFormat="dd/MM/yyyy    |    h:mm aa"
+                dateFormat="dd/MM/yyyy"
                 className="enquiry-input"
               />
               <div style={{ display: "flex", gap: "1rem" }}>
@@ -171,29 +163,33 @@ export default function Enquiry() {
             <h3 className="enquiry-subtitle">Search Enquiries</h3>
             <div className="search-box">
               <div className="search-fields">
-                <input
-                  type="text"
-                  placeholder={`Search by ${search.field}`}
-                  value={search.term}
-                  onChange={(e) =>
-                    setSearch({ ...search, term: e.target.value })
-                  }
-                  className="enquiry-input"
-                />
                 <div className="search-btn-opt">
+                  <input
+                    type="text"
+                    placeholder={`Search by ${search.field}`}
+                    value={search.term}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearch({ ...search, term: value });
+                      const searchTerm = value.toLowerCase();
+                      const result = enquiries.filter((enquiry) =>
+                        enquiry[search.field].toLowerCase().includes(searchTerm)
+                      );
+                      setFiltered(result);
+                    }}
+                    className="enquiry-input"
+                  />
+
                   <select
                     value={search.field}
-                    onChange={(e) =>
-                      setSearch({ ...search, field: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setSearch({ ...search, field: e.target.value });
+                    }}
                     className="enquiry-select"
                   >
-                    <option value="name">Search by Name</option>
-                    <option value="phone">Search by Mobile</option>
+                    <option value="phone"> Phone</option>
+                    <option value="name"> Name</option>
                   </select>
-                  <button onClick={handleSearch} className="enquiry-button">
-                    Search
-                  </button>
                 </div>
               </div>
             </div>
@@ -202,7 +198,12 @@ export default function Enquiry() {
 
         <div className="enquiry-list-section">
           <div className="enquiry-list">
-            <h3 className="enquiry-subtitle">Enquiries</h3>
+            <div className="enquiry-list-header">
+              <h3 className="enquiry-subtitle">Enquiries</h3>
+              <h3 className="enquiry-subtitle">
+                Total Count : {filtered.length}
+              </h3>
+            </div>
             {filtered.length === 0 ? (
               <p className="no-data">No enquiries found.</p>
             ) : (

@@ -142,9 +142,9 @@ export default function PatientDetails({ patient, setPatient, patientId, visits 
         <>
           <div className="patient-details">
             <p><strong>Phone:</strong> {patient.phone}</p>
-            <p><strong>Aadhar:</strong> {patient.aadharNo}</p>
+            <p><strong>Aadhar:</strong> {(patient.aadharNo?(patient.aadharNo):(<span>Not Set</span>))}</p>
             <p><strong>Gender:</strong> {patient.gender}</p>
-            <p><strong>Age:</strong> {patient.age}</p>
+            <p><strong>Age:</strong> {(patient.age)?(patient.age):(<span>Not Set</span>)}</p>
             <p><strong>Address:</strong> {patient.address}</p>
           </div>
 
