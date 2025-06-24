@@ -5,9 +5,10 @@ const {
   getAllEnquiries,
   updateEnquiry,
 } = require("../controllers/enquiryController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.post("/", createEnquiry);
-router.get("/", getAllEnquiries);
-router.put("/:id", updateEnquiry);
+router.post("/",authMiddleware, createEnquiry);
+router.get("/",authMiddleware, getAllEnquiries);
+router.put("/:id",authMiddleware, updateEnquiry);
 
 module.exports = router;

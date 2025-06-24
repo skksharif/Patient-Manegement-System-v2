@@ -27,7 +27,7 @@ export default function CaseStudyModal({ visitId, existingCaseStudy, onClose, on
   };
 
   return (
-    <div className="modal-overlay">
+    <div className="cs-modal-overlay">
       <div className="modal">
         <h3>Case Study</h3>
         <textarea

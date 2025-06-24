@@ -1,11 +1,7 @@
 .patient-form-container {
   max-width: 500px;
   margin: 10px auto;
-  background: #fff;
-  border: 1px solid var(--primary-200);
   padding: 30px;
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-md);
   font-family: Arial, sans-serif;
 }
 

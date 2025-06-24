@@ -11,10 +11,15 @@ const createVisit = async (req, res) => {
       roomNo,
       doctor,
       therapist,
-      nextVisit,
+      therapy,
       checkInTime,
     } = req.body;
 
+    if (!["OP", "IP"].includes(type)) {
+      return res.status(400).json({ error: "Invalid visit type" });
+    }
+
+    // IP logic
     if (type === "IP") {
       const activeIP = await Visit.findOne({
         patientId,
@@ -31,18 +36,30 @@ const createVisit = async (req, res) => {
       });
       if (roomConflict)
         return res.status(400).json({ error: "Room is already occupied." });
+
+      const newVisit = new Visit({
+        patientId,
+        type,
+        reason,
+        note,
+        roomNo,
+        doctor,
+        checkInTime: checkInTime ? new Date(checkInTime) : new Date(),
+      });
+
+      await newVisit.save();
+      return res.status(201).json(newVisit);
     }
 
+    // OP logic
     const newVisit = new Visit({
       patientId,
       type,
-      reason,
-      note,
-      roomNo,
-      doctor,
+      reason: "Therapy Visit",
+      note: therapy,
       therapist,
-      checkInTime: type === "IP" && checkInTime ? new Date(checkInTime) : null,
-      nextVisit: nextVisit ? new Date(nextVisit) : null,
+      therapy,
+      checkInTime: checkInTime ? new Date(checkInTime) : new Date(),
     });
 
     await newVisit.save();
@@ -56,101 +73,23 @@ const createVisit = async (req, res) => {
 const checkoutVisit = async (req, res) => {
   try {
     const { visitId } = req.params;
-    const { nextVisit, checkoutDate } = req.body;
+    const { checkoutDate } = req.body;
 
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
     if (visit.checkOutTime)
       return res.status(400).json({ error: "Already checked out." });
 
-    const checkout = checkoutDate ? new Date(checkoutDate) : new Date();
-
-    if (nextVisit) {
-      const next = new Date(nextVisit);
-      if (next <= checkout) {
-        return res.status(400).json({
-          error: "Next visit must be after checkout date.",
-        });
-      }
-      visit.nextVisit = next;
-    }
-
-    visit.checkOutTime = checkout;
-
+    visit.checkOutTime = checkoutDate ? new Date(checkoutDate) : new Date();
     await visit.save();
+
     res.status(200).json(visit);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-
-// 3. Promote OP to IP (admit again)
-const promoteToInpatient = async (req, res) => {
-  try {
-    const { patientId, reason, note, roomNo, doctor, therapist } = req.body;
-
-    const existing = await Visit.findOne({
-      patientId,
-      type: "IP",
-      checkOutTime: null,
-    });
-    if (existing)
-      return res.status(400).json({ error: "Patient is already admitted." });
-
-    const roomConflict = await Visit.findOne({
-      roomNo,
-      type: "IP",
-      checkOutTime: null,
-    });
-    if (roomConflict)
-      return res.status(400).json({ error: "Room is already occupied." });
-
-    const visit = new Visit({
-      patientId,
-      type: "IP",
-      reason,
-      note,
-      roomNo,
-      doctor,
-      therapist,
-      checkInTime: new Date(),
-    });
-
-    await visit.save();
-    res.status(201).json(visit);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-// 4. Add next follow-up visit
-const addNextVisit = async (req, res) => {
-  try {
-    const { patientId } = req.params;
-    const { nextVisit } = req.body;
-
-    const latestVisit = await Visit.findOne({ patientId }).sort({
-      createdAt: -1,
-    });
-    if (!latestVisit) return res.status(404).json({ error: "No visit found." });
-
-    if (latestVisit.type === "IP" && !latestVisit.checkOutTime) {
-      return res.status(400).json({
-        error: "Cannot add next visit while patient is still admitted.",
-      });
-    }
-
-    latestVisit.nextVisit = new Date(nextVisit);
-    await latestVisit.save();
-
-    res.status(200).json(latestVisit);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-// 5. Get full visit history
+// 3. Get full visit history
 const getVisitHistory = async (req, res) => {
   try {
     const { patientId } = req.params;
@@ -161,7 +100,7 @@ const getVisitHistory = async (req, res) => {
   }
 };
 
-// 6. Get all active inpatients
+// 4. Get all active inpatients
 const getAllActiveInpatients = async (req, res) => {
   try {
     const activeVisits = await Visit.find({
@@ -175,7 +114,7 @@ const getAllActiveInpatients = async (req, res) => {
   }
 };
 
-// 7. Get all checked-out patients
+// 5. Get all checked-out patients
 const getAllCheckedOutPatients = async (req, res) => {
   try {
     const checkedOutVisits = await Visit.find({
@@ -189,55 +128,11 @@ const getAllCheckedOutPatients = async (req, res) => {
   }
 };
 
-// 8. Get all upcoming follow-up visits
-const getUpcomingVisits = async (req, res) => {
-  try {
-    const now = new Date();
-
-    const visits = await Visit.aggregate([
-      {
-        $match: {
-          nextVisit: { $gte: now },
-        },
-      },
-      {
-        $sort: { nextVisit: -1 },
-      },
-      {
-        $group: {
-          _id: "$patientId",
-          visit: { $first: "$$ROOT" },
-        },
-      },
-      {
-        $replaceRoot: { newRoot: "$visit" },
-      },
-    ]);
-
-    const populated = await Visit.populate(visits, { path: "patientId" });
-
-    res.status(200).json(populated);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// 9. Get visits by type
-const getVisitsByType = async (req, res) => {
-  try {
-    const { type } = req.params;
-    const visits = await Visit.find({ type }).sort({ createdAt: -1 });
-    res.status(200).json(visits);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-// 10. Edit a visit (OP or IP)
+// 6. Edit a visit (OP or IP)
 const editVisit = async (req, res) => {
   try {
     const { visitId } = req.params;
     const updates = req.body;
-    console.log("Updates received:", updates);
 
     const visit = await Visit.findById(visitId);
     if (!visit) return res.status(404).json({ error: "Visit not found." });
@@ -247,20 +142,19 @@ const editVisit = async (req, res) => {
     if (updates.roomNo !== undefined) visit.roomNo = updates.roomNo;
     if (updates.doctor !== undefined) visit.doctor = updates.doctor;
     if (updates.therapist !== undefined) visit.therapist = updates.therapist;
+    if (updates.therapy !== undefined) visit.therapy = updates.therapy;
     if (updates.checkInTime) visit.checkInTime = new Date(updates.checkInTime);
-    if (updates.checkOutTime) visit.checkOutTime = new Date(updates.checkOutTime);
-    if (updates.nextVisit) visit.nextVisit = new Date(updates.nextVisit);
+    if (updates.checkOutTime)
+      visit.checkOutTime = new Date(updates.checkOutTime);
 
     await visit.save();
-
     res.status(200).json({ message: "Visit updated successfully", visit });
   } catch (err) {
-    console.error(err.message);
     res.status(400).json({ error: err.message });
   }
 };
 
-// 11. Update case study for a visit
+// 7. Update case study for a visit
 const updateCaseStudy = async (req, res) => {
   try {
     const { visitId } = req.params;
@@ -282,7 +176,7 @@ const updateCaseStudy = async (req, res) => {
   }
 };
 
-// 12. Get case study of a visit
+// 8. Get case study of a visit
 const getCaseStudy = async (req, res) => {
   try {
     const { visitId } = req.params;
@@ -298,17 +192,50 @@ const getCaseStudy = async (req, res) => {
   }
 };
 
+const getGroupedCaseStudies = async (req, res) => {
+  try {
+    const grouped = await Visit.aggregate([
+      {
+        $match: {
+          caseStudy: { $ne: null },
+          type: "IP", // Only for IP patients — optional
+        },
+      },
+      {
+        $group: {
+          _id: {
+            checkIn: "$checkInTime",
+            checkOut: "$checkOutTime",
+          },
+          caseStudies: {
+            $push: {
+              caseStudy: "$caseStudy",
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          "_id.checkIn": 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(grouped);
+  } catch (err) {
+    console.error("Error fetching grouped case studies:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   createVisit,
   checkoutVisit,
-  promoteToInpatient,
-  addNextVisit,
   getVisitHistory,
   getAllActiveInpatients,
   getAllCheckedOutPatients,
-  getUpcomingVisits,
-  getVisitsByType,
   editVisit,
   updateCaseStudy,
   getCaseStudy,
+  getGroupedCaseStudies,
 };

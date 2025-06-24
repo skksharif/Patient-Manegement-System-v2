@@ -1,6 +1,7 @@
 const express = require("express");
 const Patient = require("../models/Patient");
 const Visit = require("../models/Visit");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -16,28 +17,15 @@ const getDayRange = (date) => {
 };
 
 // GET /api/dashboard/stats
-router.get("/stats", async (req, res) => {
+router.get("/stats",authMiddleware, async (req, res) => {
   try {
     const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
 
-    const { start: tomorrowStart, end: tomorrowEnd } = getDayRange(tomorrow);
-
-    // Count stats
     const totalPatients = await Patient.countDocuments();
 
     const activePatients = await Visit.countDocuments({
       type: "IP",
       checkOutTime: null,
-    });
-
-    const upcomingVisits = await Visit.countDocuments({
-      nextVisit: { $gt: new Date() },
-    });
-
-    const tomorrowVisits = await Visit.countDocuments({
-      nextVisit: { $gte: tomorrowStart, $lte: tomorrowEnd },
     });
 
     const opCount = await Visit.countDocuments({ type: "OP" });
@@ -46,7 +34,6 @@ router.get("/stats", async (req, res) => {
     const last7Days = new Date();
     last7Days.setDate(last7Days.getDate() - 6); // Including today
 
-    // Group visits by day (last 7 days)
     const visitsPerDay = await Visit.aggregate([
       {
         $match: {
@@ -69,8 +56,6 @@ router.get("/stats", async (req, res) => {
     res.json({
       totalPatients,
       activePatients,
-      upcomingVisits,
-      tomorrowVisits,
       opCount,
       ipCount,
       visitsPerDay,

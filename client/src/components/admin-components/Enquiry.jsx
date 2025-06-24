@@ -32,7 +32,11 @@ export default function Enquiry() {
 
   const fetchEnquiries = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/enquiries`);
+      const res = await axios.get(`${BASE_URL}/api/enquiries`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setEnquiries(res.data);
       setFiltered(res.data);
     } catch (err) {
@@ -54,15 +58,20 @@ export default function Enquiry() {
 
     setLoading(true);
     try {
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
+
       const payload = { ...form, date: form.date.toISOString() };
       if (editId) {
-        await axios.put(`${BASE_URL}/api/enquiries/${editId}`, payload);
+        await axios.put(`${BASE_URL}/api/enquiries/${editId}`, payload, {
+          headers,
+        });
         toast.success("Enquiry updated");
       } else {
-        await axios.post(`${BASE_URL}/api/enquiries`, payload);
+        await axios.post(`${BASE_URL}/api/enquiries`, payload, { headers });
         toast.success("Enquiry submitted");
       }
-
       setForm({ name: "", phone: "", enquiry: "", date: new Date() });
       setEditId(null);
       fetchEnquiries();

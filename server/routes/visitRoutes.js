@@ -1,38 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
+
 const {
   createVisit,
   checkoutVisit,
-  promoteToInpatient,
-  addNextVisit,
   getVisitHistory,
-  getUpcomingVisits,
-  getVisitsByType,
   getAllActiveInpatients,
   getAllCheckedOutPatients,
   editVisit,
   updateCaseStudy,
   getCaseStudy,
+  getGroupedCaseStudies,
 } = require("../controllers/visitController");
 
-router.post("/create", auth, createVisit);                      // OP or IP
-router.put("/checkout/:visitId", auth, checkoutVisit);          // Checkout IP
-router.post("/promote-ip", auth, promoteToInpatient);           // Convert OP → IP
-router.put("/next-visit/:patientId", auth, addNextVisit);       // Add Next Visit
-router.get("/history/:patientId", auth, getVisitHistory);       // History
-router.get("/active-inpatients", auth, getAllActiveInpatients); // All IPs who are currently admitted
-router.get("/checkedout-patients", auth, getAllCheckedOutPatients); // All IPs who are currently admitted
-router.get("/upcoming", auth, getUpcomingVisits);    // Upcoming Visits
-router.get("/type/:type", auth, getVisitsByType);               // By Type
-router.put("/edit/:visitId", editVisit);
-// PUT: Update case study
-router.put("/case-study/:visitId", updateCaseStudy);
-
-// GET: Get case study
-router.get("/case-study/:visitId", getCaseStudy);
-
-
+router.post("/create", auth, createVisit); // OP or IP creation
+router.put("/checkout/:visitId", auth, checkoutVisit); // IP discharge
+router.get("/history/:patientId", auth, getVisitHistory); // All visits
+router.get("/active-inpatients", auth, getAllActiveInpatients); // IPs in hospital
+router.get("/checkedout-patients", auth, getAllCheckedOutPatients); // Discharged IPs
+router.put("/edit/:visitId", auth, editVisit); // Edit
+router.put("/case-study/:visitId", auth, updateCaseStudy); // Add/update case study
+router.get("/case-study/:visitId", auth, getCaseStudy); // Get case study
+router.get("/case-studies/grouped", getGroupedCaseStudies);
 
 
 module.exports = router;

@@ -1,3 +1,4 @@
+// Updated DownloadPatientHistory component
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -9,227 +10,236 @@ import "./DownloadPatientHistory.css";
 
 const DownloadPatientHistory = ({ patientId }) => {
   const [loading, setLoading] = useState(false);
-  function getTruncatedLines(doc, text, width, maxLines = 2) {
-    const lines = doc.splitTextToSize(text, width);
-    if (lines.length <= maxLines) return lines;
-
-    const truncated = lines.slice(0, maxLines);
-    const lastLine = truncated[truncated.length - 1];
-
-    // Add ellipsis to the last line
-    let shortened = lastLine;
-    while (
-      doc.getTextWidth(shortened + "...") > width &&
-      shortened.length > 0
-    ) {
-      shortened = shortened.slice(0, -1);
-    }
-    truncated[truncated.length - 1] = shortened + "...";
-    return truncated;
-  }
 
   const generatePDF = async () => {
     setLoading(true);
     try {
-      const patientRes = await axios.get(
-        `${BASE_URL}/api/patients/${patientId}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      const patient = patientRes.data;
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
 
-      const visitRes = await axios.get(
-        `${BASE_URL}/api/visits/history/${patientId}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      const visits = visitRes.data;
+      const [patientRes, visitRes, groupedRes, caseStudyRes] = await Promise.all([
+        axios.get(`${BASE_URL}/api/patients/${patientId}`, { headers }),
+        axios.get(`${BASE_URL}/api/visits/history/${patientId}`, { headers }),
+        axios.get(`${BASE_URL}/api/treatments/by-checkinout`, { headers }),
+        axios.get(`${BASE_URL}/api/visits/case-studies/grouped`, { headers }),
+      ]);
+
+      const patient = patientRes.data || {};
+      const visits = visitRes.data || [];
+      const grouped = groupedRes.data || [];
+      const caseGroups = caseStudyRes.data || [];
 
       const doc = new jsPDF("p", "mm", "a4");
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 14;
+      const usableWidth = pageWidth - 2 * margin;
       const oliveGreen = [46, 125, 50];
       const accentOrange = [226, 131, 50];
-      const today = new Date().toLocaleDateString();
       const logo = "/doc-logo.png";
 
-      const addPageBorder = () => {
+      const formatDate = (d) =>
+        d ? new Date(d).toLocaleDateString("en-IN") : "Not Discharged";
+
+      const trim = (s) => (s ? s.toString().trim() : "-");
+
+      const addHeader = (firstPage = false) => {
         doc.setDrawColor(...oliveGreen);
         doc.setLineWidth(0.8);
         doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
-      };
-
-      const addHeader = (firstPage = false) => {
-        addPageBorder();
-
+        const logoWidth = 40;
+        const logoHeight = 16;
+        const logoX = (pageWidth - logoWidth) / 2;
         if (firstPage) {
-          const logoWidth = 40;
-          const logoHeight = 16;
-          const logoX = (pageWidth - logoWidth) / 2;
-          const logoY = 12;
-
-          // Title to the left of logo
-          const titleX = logoX - 70; // Adjust this as needed
-          const titleY = logoY + 10;
-
           doc.setFont("helvetica", "bold");
           doc.setFontSize(14);
           doc.setTextColor(...oliveGreen);
-          doc.text("CLIENT HISTORY", titleX, titleY); // Left of the logo
-
-          doc.addImage(logo, "PNG", logoX, logoY, logoWidth, logoHeight); // Centered logo
-        } else {
-          const logoWidth = 30;
-          const logoHeight = 12;
-          const logoX = (pageWidth - logoWidth) / 2;
-          doc.addImage(logo, "PNG", logoX, 12, logoWidth, logoHeight); // Centered logo
+          doc.text("CLIENT HISTORY", margin, 22);
         }
+        doc.addImage(logo, "PNG", logoX, 12, logoWidth, logoHeight);
       };
 
       addHeader(true);
 
-      const personalInfo = [
-        ["Name", patient.name],
-        ["Phone", patient.phone],
-        ["Aadhar", patient.aadharNo],
-        ["Gender", patient.gender],
-        ["Age", patient.age],
-        ["Address", patient.address],
-      ];
-
       autoTable(doc, {
         startY: 32,
         head: [["Patient Details", ""]],
-        body: personalInfo,
+        body: [
+          ["Name", trim(patient.name)],
+          ["Phone", trim(patient.phone)],
+          ["Aadhar", trim(patient.aadharNo)],
+          ["Gender", trim(patient.gender)],
+          ["Age", patient.age != null ? patient.age : "-"],
+          ["Address", doc.splitTextToSize(trim(patient.address), usableWidth * 0.7)],
+        ],
         theme: "grid",
-        styles: {
-          fontSize: 9,
-          cellPadding: 1,
-          textColor: "#333",
-          lineColor: "#ccc",
-        },
-        headStyles: {
-          fontStyle: "bold",
-          fillColor: oliveGreen,
-          textColor: 255,
-        },
-        margin: { left: 14, right: 14 },
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 9, cellPadding: 1.5 },
+        headStyles: { fillColor: oliveGreen, textColor: 255 },
       });
 
-      let y = doc.lastAutoTable.finalY + 6;
-      const marginX = 14;
-      const lineHeight = 5;
-      const labelWidth = 30;
-      const valueWidth = (pageWidth - marginX * 2 - 8 - labelWidth * 2) / 2;
+      let y = doc.lastAutoTable.finalY + 12;
 
-      visits.forEach((v, i) => {
-        const leftFields = [
-          ["Type", v.type || "-"],
-          ["Doctor", v.doctor || "-"],
-          ["Therapist", v.therapist || "-"],
-          ["Reason", v.reason || "-"],
-          ...(v.note ? [["Note", v.note]] : []),
-        ];
-
-        const rightFields = [
-          ["Room", v.roomNo || "-"],
-          [
-            "Check-In",
-            v.checkInTime ? new Date(v.checkInTime).toLocaleDateString() : "-",
-          ],
-          [
-            "Check-Out",
-            v.checkOutTime
-              ? new Date(v.checkOutTime).toLocaleDateString()
-              : "-",
-          ],
-          [
-            "Next Visit",
-            v.nextVisit
-              ? new Date(v.nextVisit).toLocaleDateString()
-              : "Not set",
-          ],
-        ];
-
-        const numRows = Math.max(leftFields.length, rightFields.length);
-        const contentHeight = numRows * lineHeight + 10;
-
-        if (y + contentHeight > pageHeight - 20) {
-          doc.addPage();
-          addHeader(false);
-          y = 24;
-        }
-
-        doc.setFillColor(248, 248, 248);
-        doc.rect(marginX, y, pageWidth - marginX * 2, contentHeight, "F");
-
-        doc.setFillColor(...accentOrange);
-        doc.rect(marginX, y, pageWidth - marginX * 2, 6, "F");
-
+      // OP Records
+      const opVisits = visits.filter((v) => v.type === "OP");
+      if (opVisits.length) {
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setTextColor(255);
-        doc.text(`Visit ${visits.length - i}`, marginX + 2, y + 4);
+        doc.setFontSize(10);
+        doc.text("OP Records", margin, y);
+        y += 6;
 
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor("#000");
+        autoTable(doc, {
+          startY: y,
+          head: [["Name", "Phone", "Therapist", "Therapy", "Date"]],
+          body: opVisits.map((v) => [
+            trim(patient.name),
+            trim(patient.phone),
+            trim(v.therapist),
+            trim(v.therapy || v.reason),
+            formatDate(v.checkInTime),
+          ]),
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 8, cellPadding: 1.5 },
+          headStyles: { fillColor: accentOrange, textColor: 255 },
+          didDrawPage: (data) => {
+            y = data.cursor.y + 6;
+            addHeader(false);
+          },
+        });
+        y = doc.lastAutoTable.finalY + 12;
+      }
 
-        let rowY = y + 10;
-        for (let r = 0; r < numRows; r++) {
-          const left = leftFields[r];
-          const right = rightFields[r];
+      // IP Records
+      const ipVisits = visits.filter((v) => v.type === "IP");
+      if (ipVisits.length) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("IP Records", margin, y);
+        y += 6;
 
-          if (left) {
-            const leftLines = getTruncatedLines(doc, left[1], valueWidth);
-            doc.text(`${left[0]}:`, marginX + 4, rowY);
-            doc.text(leftLines, marginX + 4 + labelWidth, rowY);
-          }
-          if (right) {
-            const rightLines = getTruncatedLines(doc, right[1], valueWidth);
-            doc.text(
-              `${right[0]}:`,
-              marginX + 4 + labelWidth + valueWidth + 4,
-              rowY
-            );
-            doc.text(
-              rightLines,
-              marginX + 4 + labelWidth * 2 + valueWidth + 4,
-              rowY
-            );
-          }
+        autoTable(doc, {
+          startY: y,
+          head: [["Name", "Phone", "Reason", "Note", "Room No", "Check-In", "Check-Out"]],
+          body: ipVisits.map((v) => [
+            trim(patient.name),
+            trim(patient.phone),
+            doc.splitTextToSize(trim(v.reason), 30),
+            doc.splitTextToSize(trim(v.note), 40),
+            trim(v.roomNo),
+            formatDate(v.checkInTime),
+            v.checkOutTime ? formatDate(v.checkOutTime) : "Not Discharged",
+          ]),
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 8, cellPadding: 1.5 },
+          headStyles: { fillColor: accentOrange, textColor: 255 },
+          columnStyles: {
+            2: { cellWidth: 30 },
+            3: { cellWidth: 40 },
+          },
+          didDrawPage: (data) => {
+            y = data.cursor.y + 6;
+            addHeader(false);
+          },
+        });
+        y = doc.lastAutoTable.finalY + 12;
+      }
 
-          const rowHeight =
-            Math.max(
-              left ? getTruncatedLines(doc, left[1], valueWidth).length : 1,
-              right ? getTruncatedLines(doc, right[1], valueWidth).length : 1
-            ) * lineHeight;
-          rowY += rowHeight;
-        }
-
-        y += contentHeight + 2;
-      });
-
-      if (y + 12 > pageHeight - 20) {
+      // Daily Treatments (Reversed Order)
+      if (grouped.length) {
         doc.addPage();
         addHeader(false);
         y = 24;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text("Daily Treatments", margin, y);
+        y += 15;
+
+        [...grouped].reverse().forEach((grp, idx) => {
+          const ci = formatDate(grp.checkIn);
+          const co = grp.checkOut ? formatDate(grp.checkOut) : "Not Discharged";
+          doc.setFontSize(9);
+          doc.text(`Visit ${grouped.length - idx}: ${ci} to ${co}`, margin, y);
+          y += 6;
+
+          if (!grp.treatments?.length) {
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8);
+            doc.text("No treatments available for this visit.", margin, y);
+            y += 10;
+            return;
+          }
+
+          autoTable(doc, {
+            startY: y,
+            head: [["Date", "Morning Therapy", "Morning Therapist", "Evening Therapy", "Evening Therapist"]],
+            body: grp.treatments.map((t) => [
+              formatDate(t.date),
+              trim(t.morning?.therapy),
+              trim(t.morning?.therapist),
+              trim(t.evening?.therapy),
+              trim(t.evening?.therapist),
+            ]),
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 8, cellPadding: 1.3 },
+            headStyles: { fillColor: accentOrange, textColor: 255 },
+            didDrawPage: (data) => {
+              y = data.cursor.y + 6;
+              addHeader(false);
+            },
+          });
+
+          y = doc.lastAutoTable.finalY + 10;
+          if (y + 30 > pageHeight - margin) {
+            doc.addPage();
+            addHeader(false);
+            y = 24;
+          }
+        });
       }
 
-      doc.setTextColor(...oliveGreen);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(8);
-      doc.text(
-        "Note: This is a digitally generated report and does not require a signature.",
-        marginX,
-        y + 8
-      );
+      // Case Studies Section (Reversed Order)
+      if (caseGroups.length) {
+        doc.addPage();
+        addHeader(false);
+        y = 24;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(...oliveGreen);
+        doc.text("Case Studies", margin, y);
+        y += 10;
 
-      doc.save(`${patient.name}-VisitHistory.pdf`);
-    } catch (error) {
-      console.error("Failed to generate PDF:", error);
+        [...caseGroups].reverse().forEach((grp, idx) => {
+          const ci = formatDate(grp._id.checkIn);
+          const co = grp._id.checkOut ? formatDate(grp._id.checkOut) : "Not Discharged";
+          const title = `Visit ${caseGroups.length - idx}: ${ci} to ${co}`;
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10);
+          doc.setTextColor(0);
+          doc.text(title, margin, y);
+          y += 6;
+
+          grp.caseStudies.forEach((cs) => {
+            const para = doc.splitTextToSize(`${trim(cs.caseStudy)}`, usableWidth*1.2);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text(para, margin, y+1);
+            y += para.length * 4 + 2;
+
+            if (y + 20 > pageHeight - margin) {
+              doc.addPage();
+              addHeader(false);
+              y = 24;
+            }
+          });
+          y += 4;
+        });
+      }
+
+      doc.save(`${trim(patient.name)}-visit-history.pdf`);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
     }
     setLoading(false);
   };
@@ -238,13 +248,11 @@ const DownloadPatientHistory = ({ patientId }) => {
     <button onClick={generatePDF} className="download-btn" disabled={loading}>
       {loading ? (
         <>
-          <FaSpinner className="spin" style={{ marginRight: 8 }} />
-          Generating PDF...
+          <FaSpinner className="spin" style={{ marginRight: 8 }} /> Generating PDF...
         </>
       ) : (
         <>
-          <FiDownload style={{ marginRight: 8 }} />
-          Download History as PDF
+          <FiDownload style={{ marginRight: 8 }} /> Download History as PDF
         </>
       )}
     </button>

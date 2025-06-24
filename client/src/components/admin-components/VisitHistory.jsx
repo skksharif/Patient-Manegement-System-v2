@@ -10,7 +10,6 @@ export default function VisitHistory({ visits, refreshVisits }) {
   const [loadingVisitId, setLoadingVisitId] = useState(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
   const [checkoutDate, setCheckoutDate] = useState("");
-  const [nextVisitDate, setNextVisitDate] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeVisitId, setActiveVisitId] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -24,7 +23,7 @@ export default function VisitHistory({ visits, refreshVisits }) {
     eveningTherapist: "",
   });
 
-  const handleCheckOut = async (visitId, addNextVisit) => {
+  const handleCheckOut = async (visitId) => {
     if (!checkoutDate) {
       toast.error("Please select a checkout date");
       return;
@@ -34,9 +33,7 @@ export default function VisitHistory({ visits, refreshVisits }) {
     try {
       await axios.put(
         `${BASE_URL}/api/visits/checkout/${visitId}`,
-        {
-          nextVisit: addNextVisit ? nextVisitDate : null,
-        },
+        {},
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -46,7 +43,6 @@ export default function VisitHistory({ visits, refreshVisits }) {
       toast.success("Checked out successfully");
       setShowCheckoutModal(null);
       setCheckoutDate("");
-      setNextVisitDate("");
       document.body.classList.remove("overflow-hidden");
       refreshVisits();
     } catch (err) {
@@ -109,17 +105,12 @@ export default function VisitHistory({ visits, refreshVisits }) {
         loading={loadingVisitId === showCheckoutModal}
         date={checkoutDate}
         setDate={setCheckoutDate}
-        nextVisit={nextVisitDate}
-        setNextVisit={setNextVisitDate}
         onCancel={() => {
           setShowCheckoutModal(null);
           setCheckoutDate("");
-          setNextVisitDate("");
           document.body.classList.remove("overflow-hidden");
         }}
-        onConfirm={(addNextVisit) =>
-          handleCheckOut(showCheckoutModal, addNextVisit)
-        }
+        onConfirm={() => handleCheckOut(showCheckoutModal)}
       />
     </div>
   );

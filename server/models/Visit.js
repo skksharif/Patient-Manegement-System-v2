@@ -42,22 +42,22 @@ const visitSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  
+  therapy: {
+    type: String,
+    required: false,
+  },
 
   checkOutTime: {
     type: Date,
     default: null,
   },
 
-  nextVisit: {
-    type: Date,
-    default: null,
-  },
   caseStudy: {
     type: String,
     default: null,
   },
 
-  // NEW FIELD FOR TREATMENTS
   dailyTreatments: [
     {
       type: mongoose.Schema.Types.ObjectId,

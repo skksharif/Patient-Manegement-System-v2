@@ -7,296 +7,100 @@ import {
   LinearScale,
   BarElement,
   ArcElement,
-  Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { 
-  FaUsers, 
-  FaHospitalUser, 
-  FaCalendarAlt, 
-  FaChartBar,
-  FaUserPlus,
+import {
+  FaUserMd,
+  FaUsers,
+  FaChartLine,
+  FaHospitalAlt,
   FaClipboardList,
-  FaArrowUp,
-  FaArrowDown,
-  FaMinus
 } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
-import { NavLink } from "react-router-dom";
 import BASE_URL from "../config";
 import "./Home.css";
-import Loader from "../../Loader";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 export default function Home() {
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/dashboard/stats`);
-        setStats(response.data);
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      } finally {
-        setLoading(false);
+        const { data } = await axios.get(`${BASE_URL}/api/dashboard/insights`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setStats(data);
+      } catch (err) {
+        console.error("Dashboard fetch failed", err);
       }
     };
-
     fetchStats();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <Loader />
-        <p className="loading-text">Loading dashboard...</p>
-      </div>
-    );
-  }
-
-  if (!stats || !stats.visitsPerDay) {
-    return (
-      <div className="empty-state">
-        <div className="empty-state-icon">📊</div>
-        <h3 className="empty-state-title">No Data Available</h3>
-        <p className="empty-state-description">
-          Dashboard data is currently unavailable. Please try again later.
-        </p>
-      </div>
-    );
-  }
-
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: 'white',
-        bodyColor: 'white',
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        borderWidth: 1,
-        cornerRadius: 8,
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { 
-          color: '#6b7280',
-          font: { weight: 500, size: 12 }
-        },
-      },
-      y: {
-        grid: { 
-          color: 'rgba(0, 0, 0, 0.05)',
-          borderDash: [2, 2]
-        },
-        ticks: { 
-          color: '#6b7280',
-          stepSize: 1,
-          font: { size: 12 }
-        },
-      },
-    },
-  };
+  if (!stats) return <div className="loading">Loading dashboard...</div>;
 
   const barData = {
-    labels: stats.visitsPerDay.map((v) => {
-      const date = new Date(v._id);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }),
+    labels: stats.visitsPerDay.map((d) => d._id),
     datasets: [
       {
         label: "Daily Visits",
-        data: stats.visitsPerDay.map((v) => v.count),
-        backgroundColor: 'rgba(34, 197, 94, 0.8)',
-        borderColor: 'rgba(34, 197, 94, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-        borderSkipped: false,
+        data: stats.visitsPerDay.map((d) => d.count),
+        backgroundColor: "darkorange",
+        borderRadius: 5,
       },
     ],
   };
 
   const doughnutData = {
-    labels: ["Outpatient Visits", "Inpatient Visits"],
+    labels: ["OP Visits", "IP Visits"],
     datasets: [
       {
         data: [stats.opCount, stats.ipCount],
-        backgroundColor: [
-          'rgba(255, 85, 0, 0.8)',
-          'rgba(34, 197, 94, 0.8)',
-        ],
-        borderColor: [
-          'rgba(255, 85, 0, 0.8)',
-          'rgba(34, 197, 94, 1)',
-        ],
+        backgroundColor: ["darkorange", "olive"],
+        borderColor: ["#fff", "#fff"],
         borderWidth: 2,
-        hoverOffset: 8,
       },
     ],
   };
 
-  const doughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          font: { size: 12, weight: 500 },
-        },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: 'white',
-        bodyColor: 'white',
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        borderWidth: 1,
-        cornerRadius: 8,
-      },
-    },
-  };
-
-  const statCards = [
-    {
-      title: "Total Patients",
-      value: stats.totalPatients,
-      icon: FaUsers,
-      variant: "primary",
-      change: { value: 12, type: "positive" }
-    },
-    {
-      title: "Active Inpatients",
-      value: stats.activePatients,
-      icon: FaHospitalUser,
-      variant: "success",
-      change: { value: 3, type: "positive" }
-    },
-    {
-      title: "Upcoming Visits",
-      value: stats.upcomingVisits,
-      icon: FaCalendarAlt,
-      variant: "warning",
-      change: { value: 0, type: "neutral" }
-    },
-    {
-      title: "Tomorrow's Visits",
-      value: stats.tomorrowVisits,
-      icon: FaChartBar,
-      variant: "info",
-      change: { value: 2, type: "positive" }
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Add Patient",
-      icon: FaUserPlus,
-      link: "/admin-home/add-patient"
-    },
-    {
-      title: "View All Patients",
-      icon: FaUsers,
-      link: "/admin-home/all-patients"
-    },
-    {
-      title: "Active Patients",
-      icon: FaHospitalUser,
-      link: "/admin-home/checkedin"
-    },
-    {
-      title: "Enquiries",
-      icon: FaClipboardList,
-      link: "/admin-home/enquiries"
-    },
-  ];
-
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">
-          <MdDashboard className="dashboard-title-icon" />
-          Dashboard Overview
-        </h1>
-      </div>
+      <h1 className="dashboard-title">Prakruthi Ashramam Insights</h1>
 
-      {/* Stats Grid */}
       <div className="stats-grid">
-        {statCards.map((card, index) => (
-          <div key={index} className={`stat-card ${card.variant}`}>
-            <div className="stat-header">
-              <h3 className="stat-title">{card.title}</h3>
-              <div className="stat-icon">
-                <card.icon />
-              </div>
-            </div>
-            <p className="stat-value">{card.value}</p>
-           
-          </div>
-        ))}
-      </div>
-
-      {/* Charts Section */}
-      <div className="charts-section">
-        <div className="charts-header">
-          <h2 className="charts-title">Analytics & Insights</h2>
-          <p className="charts-subtitle">
-            Visual representation of patient visit patterns and distribution
-          </p>
+        <div className="stat-box olive">
+          <FaUsers /> Total Patients
+          <span>{stats.totalPatients}</span>
         </div>
-
-        <div className="charts-grid">
-          <div className="chart-card">
-            <div className="chart-header">
-              <h3 className="chart-title">
-                <FaChartBar className="chart-title-icon" />
-                Daily Visit Trends
-              </h3>
-              <p className="chart-subtitle">Patient visits over the last 7 days</p>
-            </div>
-            <div className="chart-container">
-              <Bar data={barData} options={barOptions} />
-            </div>
-          </div>
-
-          <div className="chart-card">
-            <div className="chart-header">
-              <h3 className="chart-title">
-                <FaUsers className="chart-title-icon" />
-                Visit Distribution
-              </h3>
-              <p className="chart-subtitle">Breakdown by visit type</p>
-            </div>
-            <div className="chart-container">
-              <Doughnut data={doughnutData} options={doughnutOptions} />
-            </div>
-          </div>
+        <div className="stat-box darkorange">
+          <FaHospitalAlt /> Active Inpatients
+          <span>{stats.activeInpatients}</span>
+        </div>
+        <div className="stat-box olive">
+          <FaClipboardList /> Upcoming Today
+          <span>{stats.upcomingToday}</span>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <div className="quick-actions-header">
-          <h2 className="quick-actions-title">Quick Actions</h2>
+      <div className="charts-container">
+        <div className="chart-box">
+          <h3>Visit Distribution</h3>
+          <Doughnut data={doughnutData} options={{ responsive: true }} />
         </div>
-        <div className="actions-grid">
-          {quickActions.map((action, index) => (
-            <NavLink key={index} to={action.link} className="action-card">
-              <div className="action-icon">
-                <action.icon />
-              </div>
-              <h4 className="action-title">{action.title}</h4>
-            </NavLink>
-          ))}
+        <div className="chart-box graph">
+          <h3>Daily Visits</h3>
+          <Bar data={barData} options={{ responsive: true }} />
         </div>
       </div>
     </div>

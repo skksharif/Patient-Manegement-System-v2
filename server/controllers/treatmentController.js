@@ -31,6 +31,45 @@ const addDailyTreatment = async (req, res) => {
   }
 };
 
+const getTreatmentsByCheckInOut = async (req, res) => {
+  try {
+    const grouped = await DailyTreatment.aggregate([
+      {
+        $lookup: {
+          from: "visits",
+          localField: "visitId",
+          foreignField: "_id",
+          as: "visit"
+        }
+      },
+      { $unwind: "$visit" },
+      {
+        $group: {
+          _id: {
+            checkIn: "$visit.checkInTime",
+            checkOut: "$visit.checkOutTime"
+          },
+          treatments: { $push: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          checkIn: "$_id.checkIn",
+          checkOut: "$_id.checkOut",
+          treatments: 1,
+          _id: 0
+        }
+      },
+      { $sort: { checkIn: 1 } }
+    ]);
+
+    res.status(200).json(grouped);
+  } catch (err) {
+    console.error("Error fetching grouped treatments", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Get all daily treatments for a visit
 const getDailyTreatments = async (req, res) => {
   const { visitId } = req.params;
@@ -71,4 +110,5 @@ module.exports = {
   addDailyTreatment,
   getDailyTreatments,
   updateDailyTreatment,
+  getTreatmentsByCheckInOut
 };

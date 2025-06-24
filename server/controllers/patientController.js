@@ -6,9 +6,7 @@ const createPatient = async (req, res) => {
     await patient.save();
     res.status(201).json(patient);
   } catch (error) {
-    if (error.code === 11000 && error.keyPattern?.aadharNo) {
-      return res.status(400).json({ error: 'Aadhar number already exists' });
-    }
+
     res.status(400).json({ error: error.message });
   }
 };
@@ -53,4 +51,24 @@ const updatePatient = async (req, res) => {
   }
 };
 
-module.exports = { createPatient, getAllPatients, updatePatient,getPatientById };
+const  checkPatient =  async (req, res) => {
+  const { phone } = req.query;
+  console.log(phone)
+  if (!phone) {
+    return res.status(400).json({ error: "Phone number is required" });
+  }
+
+  try {
+    const patient = await Patient.findOne({ phone });
+    if (patient) {
+      return res.status(200).json({ exists: true, patient });
+    } else {
+      return res.status(200).json({ exists: false });
+    }
+  } catch (err) {
+    console.error("Error checking patient:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { createPatient, getAllPatients, updatePatient,getPatientById,checkPatient };

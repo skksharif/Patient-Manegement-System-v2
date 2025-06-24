@@ -1,0 +1,192 @@
+.modal-full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fdfcf7;
+  padding: 30px 50px;
+  overflow-y: auto;
+  border: none;
+  z-index: 9999;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.overlay-full {
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  color: #333;
+}
+
+.step-content .btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: darkred;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.step-content .btn-close:hover {
+  color: white;
+}
+
+.patient-summary {
+  background: #edf7e1;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  border-left: 5px solid olive;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  border-radius: 6px;
+}
+
+.stepper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.step {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  background: #f0f0f0;
+  color: #555;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  transition: 0.3s;
+}
+
+.step.active {
+  background: olive;
+  color: white;
+  border-color: darkorange;
+}
+
+.step-content {
+  max-width: 800px;
+  margin: auto;
+}
+
+.patient-form,
+.visit-form {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.patient-form input,
+.patient-form select,
+.patient-form textarea,
+.visit-form input,
+.visit-form select,
+.visit-form textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.patient-form input:focus,
+.patient-form select:focus,
+.patient-form textarea:focus,
+.visit-form input:focus,
+.visit-form select:focus,
+.visit-form textarea:focus {
+  outline: none;
+  border-color: darkorange;
+  box-shadow: 0 0 3px darkorange;
+}
+
+.step-content .patient-form button,
+.visit-form button {
+  background: rgb(109, 146, 0);
+  color: white;
+  padding: 12px 24px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+
+.patient-form button:disabled,
+.visit-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.step-content .btn-cancel {
+  background: transparent;
+  color: #333;
+  border: 1px solid #aaa;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.step-content .btn-cancel:hover {
+  background: #eee;
+}
+
+.patient-visit-details {
+  background: #fffef3;
+  padding: 18px 22px;
+  border-left: 4px solid olive;
+  margin-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  border-radius: 6px;
+}
+
+.patient-visit-details p {
+  margin: 6px 0;
+  color: #444;
+}
+@media screen and (max-width: 600px) {
+  .modal-full {
+    padding: 20px;
+  }
+
+  .stepper {
+    flex-direction: column;
+  }
+
+  .step {
+    font-size: 14px;
+  }
+
+  .patient-form,
+  .visit-form {
+    padding: 15px;
+  }
+}

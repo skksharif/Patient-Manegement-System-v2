@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
+
 import "./App.css";
 import Hero from "./components/Hero";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -8,9 +10,10 @@ import { ToastContainer } from "react-toastify";
 function App() {
   return (
     <>
-      {/* your app components */}
-      <ToastContainer position="top-right" autoClose={3000} />
-
+      {createPortal(
+        <ToastContainer position="top-right" autoClose={3000} />,
+        document.getElementById("toast-root")
+      )}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Hero />} />

@@ -21,7 +21,7 @@ export default function AddPatient() {
 
   const validate = () => {
     const { name, phone, aadharNo, gender, age, address } = form;
-    if (!name || !phone || !gender || !address)
+    if (!name || !phone || !gender )
       return "All fields are required";
     if (!/^\d{10}$/.test(phone)) return "Phone must be 10 digits";
     return "";
@@ -99,7 +99,7 @@ export default function AddPatient() {
         />
         <textarea
           name="address"
-          placeholder="Address"
+          placeholder="Address | Optional"
           value={form.address}
           onChange={handleChange}
           rows="3"
