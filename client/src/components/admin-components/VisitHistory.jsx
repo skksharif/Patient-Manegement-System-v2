@@ -70,48 +70,50 @@ export default function VisitHistory({ visits, refreshVisits }) {
   };
 
   return (
-    <div className="visit-history-container">
-      <h2 className="title">Visit History</h2>
-      {visits.length === 0 ? (
-        <p className="text-muted">No visits yet.</p>
-      ) : (
-        <div className="visit-list">
-          {visits.map((visit) => (
-            <VisitCard
-              key={visit._id}
-              visit={visit}
-              onCheckout={() => {
-                setShowCheckoutModal(visit._id);
-                document.body.classList.add("overflow-hidden");
-              }}
-              onAdd={() => {
-                setActiveVisitId(visit._id);
-                setShowAddModal(true);
-                document.body.classList.add("overflow-hidden");
-              }}
-              onView={() => {
-                handleViewTreatments(visit._id);
-                document.body.classList.add("overflow-hidden");
-              }}
-              onRefresh={refreshVisits}
-            />
-          ))}
-        </div>
-      )}
+    <>
+      <h2 className="vh-title">Visit History</h2>
+      <div className="visit-history-container">
+        {visits.length === 0 ? (
+          <p className="text-muted">No visits yet.</p>
+        ) : (
+          <div className="visit-list">
+            {visits.map((visit) => (
+              <VisitCard
+                key={visit._id}
+                visit={visit}
+                onCheckout={() => {
+                  setShowCheckoutModal(visit._id);
+                  document.body.classList.add("overflow-hidden");
+                }}
+                onAdd={() => {
+                  setActiveVisitId(visit._id);
+                  setShowAddModal(true);
+                  document.body.classList.add("overflow-hidden");
+                }}
+                onView={() => {
+                  handleViewTreatments(visit._id);
+                  document.body.classList.add("overflow-hidden");
+                }}
+                onRefresh={refreshVisits}
+              />
+            ))}
+          </div>
+        )}
 
-      {/* Checkout Modal */}
-      <CheckoutModal
-        visible={!!showCheckoutModal}
-        loading={loadingVisitId === showCheckoutModal}
-        date={checkoutDate}
-        setDate={setCheckoutDate}
-        onCancel={() => {
-          setShowCheckoutModal(null);
-          setCheckoutDate("");
-          document.body.classList.remove("overflow-hidden");
-        }}
-        onConfirm={() => handleCheckOut(showCheckoutModal)}
-      />
-    </div>
+        {/* Checkout Modal */}
+        <CheckoutModal
+          visible={!!showCheckoutModal}
+          loading={loadingVisitId === showCheckoutModal}
+          date={checkoutDate}
+          setDate={setCheckoutDate}
+          onCancel={() => {
+            setShowCheckoutModal(null);
+            setCheckoutDate("");
+            document.body.classList.remove("overflow-hidden");
+          }}
+          onConfirm={() => handleCheckOut(showCheckoutModal)}
+        />
+      </div>
+    </>
   );
 }

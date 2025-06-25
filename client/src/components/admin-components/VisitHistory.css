@@ -1,28 +1,28 @@
 /* Main container */
 .visit-history-container {
-  padding: 10px;
+  padding: 5px;
   margin-bottom: 10px;
   height: 75vh;
   overflow-y: auto;
   background: #fff;
-  border-radius: var(--radius-2xl);
+  border-radius: 10px;
   border: 1px solid var(--primary-200);
   box-shadow: var(--shadow-md);
 }
 
 /* Section title */
-.visit-history-container .title {
-  font-size: var(--font-size-3xl);
-  margin-bottom: 16px;
-  font-weight: 700;
+.vh-title {
   color: var(--primary-700);
+  font-size: var(--font-size-xl);
+  margin-top: 5px;
+  text-align: center;
 }
 
 /* Visit card list */
 .visit-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 /* Buttons inside card */

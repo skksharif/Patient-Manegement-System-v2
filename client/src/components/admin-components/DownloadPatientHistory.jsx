@@ -155,7 +155,7 @@ const DownloadPatientHistory = ({ patientId }) => {
         doc.text("Daily Treatments", margin, y);
         y += 15;
 
-        [...grouped].reverse().forEach((grp, idx) => {
+        [...grouped].forEach((grp, idx) => {
           const ci = formatDate(grp.checkIn);
           const co = grp.checkOut ? formatDate(grp.checkOut) : "Not Discharged";
           doc.setFontSize(9);

@@ -136,33 +136,36 @@ export default function Upcoming() {
       <h2 className="heading">Upcoming Registrations</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
-        <input
-          placeholder="Name"
-          className="input"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-        <input
-          placeholder="Phone"
-          className="input"
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        />
-        <select
-          className="input"
-          value={form.gender}
-          onChange={(e) => setForm({ ...form, gender: e.target.value })}
-        >
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-        <DatePicker
-          selected={form.plannedVisitDate}
-          onChange={(date) => setForm({ ...form, plannedVisitDate: date })}
-          className="input"
-          dateFormat="dd/MM/yyyy"
-        />
+        <div className="inner-form-container">
+          <input
+            placeholder="Name"
+            className="input"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <input
+            placeholder="Phone"
+            className="input"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <select
+            className="input"
+            value={form.gender}
+            onChange={(e) => setForm({ ...form, gender: e.target.value })}
+          >
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <DatePicker
+            selected={form.plannedVisitDate}
+            onChange={(date) => setForm({ ...form, plannedVisitDate: date })}
+            className="input"
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
+
         <div className="btn-row">
           <button type="submit" className="submit-btn">
             {editId ? "Update" : "Add Patient"}

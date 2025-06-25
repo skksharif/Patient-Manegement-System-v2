@@ -88,7 +88,7 @@ export default function Home() {
           <span>{stats.activeInpatients}</span>
         </div>
         <div className="stat-box olive">
-          <FaClipboardList /> Upcoming Today
+          <FaClipboardList /> Today Bookings
           <span>{stats.upcomingToday}</span>
         </div>
       </div>

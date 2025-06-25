@@ -11,7 +11,7 @@
 .upcoming-container {
   max-width: 1100px;
   margin: auto;
-  padding: 20px;
+  padding: 10px;
   font-family: sans-serif;
 }
 
@@ -23,17 +23,21 @@
 }
 
 .form-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  background-color: var(--white);
   padding: 16px;
   border: 1px solid var(--dark-gray);
   border-radius: 8px;
   margin-bottom: 20px;
+  background-color: var(--white);
+}
+.inner-form-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 .input {
+  height: min-content;
   padding: 10px;
   border: 1px solid var(--dark-gray);
   border-radius: 6px;
@@ -41,7 +45,6 @@
 }
 
 .submit-btn {
-  grid-column: span 2;
   padding: 10px;
   background-color: var(--olive);
   color: var(--white);
@@ -49,10 +52,22 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  margin-top: 15px;
 }
 
 .submit-btn:hover {
   background-color: #445622;
+}
+.btn-cancel {
+  padding: 10px;
+  background-color: rgb(255, 77, 0);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-left: 10px;
 }
 
 .tabs {

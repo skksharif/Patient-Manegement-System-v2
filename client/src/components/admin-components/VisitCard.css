@@ -1,14 +1,13 @@
 .visit-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+  flex-direction: column;
   background: #fff;
   border-left: 4px solid var(--primary-600);
   border: 1px solid var(--primary-200);
-  border-radius: var(--radius-xl);
+  border-radius: 5px;
   box-shadow: var(--shadow-sm);
-  padding: 20px;
-  margin-bottom: 24px;
+  padding: 10px 15px;
+  margin-bottom: 5px;
   position: relative;
   transition: box-shadow 0.3s ease;
 }
@@ -19,21 +18,17 @@
 }
 
 .visit-data {
-  flex: 1 1 70%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+  gap: 5px;
   align-items: start;
 }
 
-.visit-actions {
-  flex: 0 1 240px;
+.button-group-vc{
   display: flex;
-  flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-end;
+  gap: 10px;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -74,15 +69,15 @@
 
 .edit-btn {
   position: absolute;
-  top: 2px;
-  right: 20px;
+  top: 5px;
+  right: 5px;
   background-color: var(--secondary-500);
   color: #fff;
-  padding: 6px 12px;
+  padding: 5px 8px 3px 10px !important;
   font-size: 12px;
   font-weight: 600;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 5px !important;
   cursor: pointer;
 }
 

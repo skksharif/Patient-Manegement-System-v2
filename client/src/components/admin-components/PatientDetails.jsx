@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import BASE_URL from "../config";
 import DownloadPatientHistory from "./DownloadPatientHistory";
+import { FaRegEdit } from "react-icons/fa";
 
 Modal.setAppElement("#root");
 
@@ -113,7 +114,7 @@ export default function PatientDetails({
       <div className="section-header">
         <h2 className="section-title">{patient.name}'s Details</h2>
         <button className="edit-button" onClick={() => setEditMode(!editMode)}>
-          {editMode ? "Cancel" : "Edit"}
+          {editMode ? "Cancel" :   <FaRegEdit />}
         </button>
       </div>
 
@@ -153,7 +154,7 @@ export default function PatientDetails({
               <strong>Age:</strong> {patient.age || <span>Not Set</span>}
             </p>
             <p>
-              <strong>Address:</strong> {patient.address}
+              <strong>Address:</strong> {patient.address || <span> Not Set</span>}
             </p>
           </div>
 

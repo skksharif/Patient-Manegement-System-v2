@@ -7,7 +7,7 @@ const upcomingPatientSchema = new mongoose.Schema({
   plannedVisitDate: { type: Date, required: true },
   status: {
     type: String,
-    enum: ["Scheduled", "Completed","Missed"],
+    enum: ["Scheduled", "Completed","~"],
     default: "Scheduled",
   },
   createdAt: { type: Date, default: Date.now },

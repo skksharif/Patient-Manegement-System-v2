@@ -1,81 +1,70 @@
-.patient-form-container {
-  max-width: 500px;
-  margin: 10px auto;
-  padding: 30px;
-  font-family: Arial, sans-serif;
+.patient-entry-container {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: var(--shadow-lg);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.form-title {
+.patient-entry-heading {
   text-align: center;
-  font-size: var(--font-size-3xl);
+  font-size: 26px;
+  font-weight: bold;
   color: var(--primary-700);
   margin-bottom: 20px;
-  font-weight: 700;
 }
 
-.patient-form input,
-.patient-form select,
-.patient-form textarea {
+.patient-entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.patient-entry-input,
+.patient-entry-select,
+.patient-entry-textarea {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid var(--primary-300);
-  border-radius: var(--radius-lg);
+  padding: 12px 14px;
   font-size: 16px;
-  transition: border 0.2s;
-  background: white;
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-md);
+  background-color: #fafafa;
+  transition: all 0.2s ease-in-out;
 }
 
-.patient-form input:focus,
-.patient-form select:focus,
-.patient-form textarea:focus {
+.patient-entry-input:focus,
+.patient-entry-select:focus,
+.patient-entry-textarea:focus {
   outline: none;
   border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
+  box-shadow: 0 0 0 3px rgba(75, 117, 60, 0.15);
 }
 
-.patient-form button {
+.patient-entry-submit-button {
   width: 100%;
   padding: 14px;
   background-color: var(--primary-500);
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   color: white;
-  font-size: 16px;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
-.patient-form button:hover {
+.patient-entry-submit-button:hover {
   background-color: var(--primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
-.patient-form button:disabled {
-  opacity: 0.7;
+.patient-entry-submit-button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
-.form-error {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: var(--radius-md);
-}
-
-.form-success {
-  background-color: rgb(75 117 60 / 0.1);
-  color: var(--primary-700);
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: var(--radius-md);
-}
-
-.spinner {
+.patient-entry-spinner {
   width: 20px;
   height: 20px;
   border: 3px solid white;
@@ -83,10 +72,10 @@
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: inline-block;
-  vertical-align: middle;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

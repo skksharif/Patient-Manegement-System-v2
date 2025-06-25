@@ -3,13 +3,15 @@ import Modal from "react-modal";
 import { toast } from "react-toastify";
 import axios from "axios";
 import BASE_URL from "../config";
-import "./AdmitModal.css";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "./AdmitModal.css";
+import { MdClose } from "react-icons/md";
 
 Modal.setAppElement("#root");
 
 export default function AdmitModal({ isOpen, onClose, patient }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [exists, setExists] = useState(null);
   const [patientDetails, setPatientDetails] = useState(null);
   const [step, setStep] = useState(1);
@@ -31,7 +33,7 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
     note: "",
     roomNo: "",
     doctor: "",
-    checkInTime: "",
+    checkInTime: null,
   });
 
   useEffect(() => {
@@ -51,11 +53,11 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
           setPatientDetails(response.data.patient);
           setStep(2);
         } else {
-          setForm({
-            ...form,
+          setForm((prev) => ({
+            ...prev,
             name: patient?.name || "",
             phone: patient?.phone || "",
-          });
+          }));
         }
       } catch {
         setExists(null);
@@ -71,26 +73,27 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
         note: "",
         roomNo: "",
         doctor: "",
-        checkInTime: "",
+        checkInTime: null,
       });
       checkExistence();
     }
   }, [isOpen, patient]);
 
-  const handleChange = (e) => {
+  const handlePatientChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const validate = () => {
+  const validatePatient = () => {
     const { name, phone, gender } = form;
-    if (!name || !phone || !gender) return "Name, Phone & Gender are required";
+    if (!name || !phone || !gender)
+      return "Name, Phone, and Gender are required";
     if (!/^\d{10}$/.test(phone)) return "Phone must be 10 digits";
     return "";
   };
 
   const handleAddPatient = async (e) => {
     e.preventDefault();
-    const error = validate();
+    const error = validatePatient();
     if (error) return toast.error(error);
 
     const payload = { ...form };
@@ -98,13 +101,9 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
 
     setAdding(true);
     try {
-      const res = await axios.post(
-        `${BASE_URL}/api/patients/add-patient`,
-        payload,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      const res = await axios.post(`${BASE_URL}/api/patients/add-patient`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       toast.success("Patient added successfully");
       setPatientDetails(res.data);
       setExists(true);
@@ -116,11 +115,15 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
     }
   };
 
+  const handleVisitChange = (e) => {
+    setVisitForm({ ...visitForm, [e.target.name]: e.target.value });
+  };
+
   const handleAddVisit = async (e) => {
     e.preventDefault();
-    const { reason, note, roomNo, doctor, checkInTime } = visitForm;
+    const { reason, roomNo, doctor } = visitForm;
     if (!reason || !roomNo || !doctor) {
-      return toast.error("All fields are required except note and time.");
+      return toast.error("Reason, Room Number, and Doctor are required");
     }
 
     setVisitLoading(true);
@@ -130,11 +133,11 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
         {
           patientId: patientDetails._id,
           type: "IP",
-          reason,
-          note,
-          roomNo,
-          doctor,
-          checkInTime,
+          reason: visitForm.reason,
+          note: visitForm.note,
+          roomNo: visitForm.roomNo,
+          doctor: visitForm.doctor,
+          checkInTime: visitForm.checkInTime,
         },
         {
           headers: {
@@ -172,147 +175,79 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
     >
       <div className="modal-header">
         <h2>Admit Patient</h2>
-        <button className="btn-close" onClick={onClose}>
-          ✖
-        </button>
+        <button className="adv-btn-close" onClick={onClose}><MdClose/></button>
       </div>
 
       {exists !== null && (
-        <div className="patient-summary">
+        <div className="patient-existence">
           {exists ? (
-            <div style={{
-                cursor:"pointer"
-            }}
-              onClick={() =>
-                navigate(`/admin-home/patient/${patientDetails?._id}`)
-              }>
-              <strong>✅ {patientDetails?.name}</strong> |{" "}
-              {patientDetails?.gender} | {patientDetails?.phone}
-              {patientDetails?.aadharNo && (
-                <> | Aadhar: {patientDetails?.aadharNo}</>
-              )}
+            <div>
+              ✅ <strong>{patientDetails?.name}</strong> | {patientDetails?.gender} | {patientDetails?.phone}
+              {patientDetails?.aadharNo && <> | Aadhar: {patientDetails?.aadharNo}</>}
+              <button
+                className="btn-primary patient-link"
+                onClick={() => navigate(`/admin-home/patient/${patientDetails?._id}`)}
+              >
+                Go To Profile
+              </button>
             </div>
           ) : (
-            <>
-              <strong>❌ No patient found</strong> with phone {patient?.phone}
-            </>
+            <div>
+              ❌ <strong>No Patient Found</strong> with phone {patient?.phone}
+            </div>
           )}
         </div>
       )}
 
       <div className="stepper">
-        <div className={`step ${step === 1 ? "active" : ""}`}>
-          1. Add Patient
-        </div>
+        <div className={`step ${step === 1 ? "active" : ""}`}>1. Add Patient</div>
         <div className={`step ${step === 2 ? "active" : ""}`}>2. Add Visit</div>
       </div>
 
       <div className="step-content">
         {step === 1 && exists === false && (
           <form className="patient-form" onSubmit={handleAddPatient}>
-            <input
-              name="name"
-              placeholder="Full Name"
-              value={form.name}
-              onChange={handleChange}
-            />
-            <input
-              name="phone"
-              placeholder="Phone (10 digits)"
-              value={form.phone}
-              onChange={handleChange}
-            />
-            <input
-              name="aadharNo"
-              placeholder="Aadhar No (Optional)"
-              value={form.aadharNo}
-              onChange={handleChange}
-            />
-            <select name="gender" value={form.gender} onChange={handleChange}>
+            {/* patient fields */}
+            <input name="name" placeholder="Full Name" value={form.name} onChange={handlePatientChange} required />
+            <input name="phone" placeholder="Phone (10 digits)" value={form.phone} onChange={handlePatientChange} required />
+            <input name="aadharNo" placeholder="Aadhar No (Optional)" value={form.aadharNo} onChange={handlePatientChange} />
+            <select name="gender" value={form.gender} onChange={handlePatientChange} required>
               <option value="">Select Gender</option>
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
             </select>
-            <input
-              name="age"
-              type="number"
-              placeholder="Age (Optional)"
-              value={form.age}
-              onChange={handleChange}
-            />
-            <textarea
-              name="address"
-              placeholder="Address (Optional)"
-              value={form.address}
-              onChange={handleChange}
-              rows="2"
-            />
-            <button type="submit" disabled={adding}>
-              {adding ? "Adding..." : "Add Patient"}
-            </button>
+            <input name="age" type="number" placeholder="Age (Optional)" value={form.age} onChange={handlePatientChange} />
+            <textarea name="address" placeholder="Address (Optional)" value={form.address} onChange={handlePatientChange} rows="2" />
+            <div className="form-actions">
+              <button className="submit-adv-visit" type="submit" disabled={adding}>{adding ? "Adding..." : "Add Patient"}</button>
+              <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
+            </div>
           </form>
         )}
 
         {step === 2 && (
-          <>
-      
-            <form className="visit-form" onSubmit={handleAddVisit}>
-              <h2>Add IP Visit</h2>
-
-              <input
-                name="doctor"
-                placeholder="Doctor Name"
-                value={visitForm.doctor}
-                onChange={(e) =>
-                  setVisitForm({ ...visitForm, doctor: e.target.value })
-                }
-              />
-              <input
-                name="reason"
-                placeholder="Reason for Admission"
-                value={visitForm.reason}
-                onChange={(e) =>
-                  setVisitForm({ ...visitForm, reason: e.target.value })
-                }
-              />
-              <input
-                name="roomNo"
-                placeholder="Room Number"
-                value={visitForm.roomNo}
-                onChange={(e) =>
-                  setVisitForm({ ...visitForm, roomNo: e.target.value })
-                }
-              />
-              <textarea
-                name="note"
-                placeholder="Note"
-                value={visitForm.note}
-                onChange={(e) =>
-                  setVisitForm({ ...visitForm, note: e.target.value })
-                }
-                rows="3"
-              />
-
-              <label>Check-In Time:</label>
-              <input
-                type="datetime-local"
-                value={visitForm.checkInTime}
-                onChange={(e) =>
-                  setVisitForm({ ...visitForm, checkInTime: e.target.value })
-                }
-              />
-
-              <div className="form-actions">
-                <button type="submit" disabled={visitLoading}>
-                  {visitLoading ? "Submitting..." : "Submit"}
-                </button>
-                <button type="button" className="btn-cancel" onClick={onClose}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </>
+          <form className="visit-form" onSubmit={handleAddVisit}>
+            {/* visit fields */}
+            <input name="doctor" placeholder="Doctor Name" value={visitForm.doctor} onChange={handleVisitChange} required />
+            <input name="reason" placeholder="Reason for Admission" value={visitForm.reason} onChange={handleVisitChange} required />
+            <input name="roomNo" placeholder="Room Number" value={visitForm.roomNo} onChange={handleVisitChange} required />
+            <textarea name="note" placeholder="Note" value={visitForm.note} onChange={handleVisitChange} rows="2" />
+            <DatePicker
+              selected={visitForm.checkInTime ? new Date(visitForm.checkInTime) : null}
+              onChange={(date) => setVisitForm({ ...visitForm, checkInTime: date?.toISOString() })}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="yyyy-MM-dd | HH:mm aa"
+              placeholderText="Select Check In date and time"
+              className="custom-datepicker-input"
+            />
+            <div className="form-actions">
+              <button className="submit-adv-visit" type="submit" disabled={visitLoading}>{visitLoading ? "Submitting..." : "Submit"}</button>
+              <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
+            </div>
+          </form>
         )}
       </div>
     </Modal>

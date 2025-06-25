@@ -3,6 +3,8 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
+import { FaRegEdit } from "react-icons/fa";
+
 import BASE_URL from "../config";
 import DailyTreatmentsPanel from "./DailyTreatmentsPanel";
 import CaseStudyModal from "./CaseStudyModal";
@@ -105,10 +107,14 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
 
   return (
     <>
-      <div className={`visit-card ${visit.type === "IP" ? "ip-visit" : "op-visit"}`}>
+      <div
+        className={`visit-card ${
+          visit.type === "IP" ? "ip-visit" : "op-visit"
+        }`}
+      >
         {!editing && (
           <button className="edit-btn" onClick={() => setEditing(true)}>
-            Edit
+            <FaRegEdit />
           </button>
         )}
 
@@ -142,19 +148,42 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
             <>
               {visit.type === "OP" && (
                 <>
-                  <p><strong>Therapy:</strong> {visit.therapy || "Not Set"}</p>
-                  <p><strong>Therapist:</strong> {visit.therapist || "Not Assigned"}</p>
-                  <p><strong>Date:</strong> {formatDate(visit.checkInTime)}</p>
+                  <p>
+                    <strong>Therapy:</strong> {visit.therapy || "Not Set"}
+                  </p>
+                  <p>
+                    <strong>Therapist:</strong>{" "}
+                    {visit.therapist || "Not Assigned"}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(visit.checkInTime).toLocaleDateString("en-In")}
+                  </p>
                 </>
               )}
               {visit.type === "IP" && (
                 <>
-                  <p><strong>Doctor:</strong> {visit.doctor || "Not Assigned"}</p>
-                  <p><strong>Reason:</strong> {visit.reason}</p>
-                  <p><strong>Note:</strong> {visit.note || "No note"}</p>
-                  <p><strong>Room No:</strong> {visit.roomNo || "Not Assigned"}</p>
-                  <p><strong>Check-In:</strong> {formatDate(visit.checkInTime)}</p>
-                  <p><strong>Check-Out:</strong> {visit.checkOutTime ? formatDate(visit.checkOutTime) : "Not yet"}</p>
+                  <p>
+                    <strong>Doctor:</strong> {visit.doctor || "Not Assigned"}
+                  </p>
+                  <p>
+                    <strong>Reason:</strong> {visit.reason}
+                  </p>
+                  <p>
+                    <strong>Note:</strong> {visit.note || "No note"}
+                  </p>
+                  <p>
+                    <strong>Room No:</strong> {visit.roomNo || "Not Assigned"}
+                  </p>
+                  <p>
+                    <strong>Check-In:</strong> {formatDate(visit.checkInTime)}
+                  </p>
+                  <p>
+                    <strong>Check-Out:</strong>{" "}
+                    {visit.checkOutTime
+                      ? formatDate(visit.checkOutTime)
+                      : "Not yet"}
+                  </p>
                 </>
               )}
             </>
@@ -162,23 +191,43 @@ export default function VisitCard({ visit, onCheckout, onRefresh }) {
         </div>
 
         <div className="visit-actions">
-          <div className="button-group">
+          <div className="button-group-vc">
             {editing ? (
               <>
-                <button className="button-green" onClick={handleSave}>Save</button>
-                <button className="button-red" onClick={() => setEditing(false)}>Cancel</button>
+                <button className="button-green" onClick={handleSave}>
+                  Save
+                </button>
+                <button
+                  className="button-red"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </button>
               </>
             ) : (
               <>
-               
                 {visit.type === "IP" && (
-                  <button className="button-green" onClick={() => setShowDailyPanel(true)}>Daily Treatments</button>
+                  <button
+                    className="button-green"
+                    onClick={() => setShowDailyPanel(true)}
+                  >
+                    Daily Treatments
+                  </button>
                 )}
+
+                {visit.type === "IP" && (
+                  <button
+                    className="button-indigo"
+                    onClick={() => setShowCaseModal(true)}
+                  >
+                    Case Study
+                  </button>
+                )}
+
                 {visit.type === "IP" && !visit.checkOutTime && (
-                  <button className="button-red" onClick={onCheckout}>Checkout</button>
-                )}
-                 {visit.type === "IP" && !visit.checkOutTime && (
-                   <button className="button-indigo" onClick={() => setShowCaseModal(true)}>Case Study</button>
+                  <button className="button-red" onClick={onCheckout}>
+                    Checkout
+                  </button>
                 )}
               </>
             )}

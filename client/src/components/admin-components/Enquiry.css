@@ -8,7 +8,8 @@
 
 .enquiry-layout {
   display: flex;
-  gap: 24px;
+  gap: 10px;
+  margin-top: 10px;
   flex-wrap: wrap;
 }
 
@@ -26,23 +27,23 @@
   border-radius: 20px;
 }
 
-.enquiry-list{
+.enquiry-list {
   padding: 10px 20px;
 }
-.enquiry-list-header{
+.enquiry-list-header {
   display: flex;
   justify-content: space-between;
 }
 .enquiry-card {
   background: #ffffff;
-  border-radius: var(--radius-2xl);
-  padding: 24px;
+  border-radius: var(--radius-xl);
+  padding: 12px;
   margin-bottom: 24px;
   box-shadow: var(--shadow-md);
 }
 
 .enquiry-title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--primary-700);
   margin-bottom: 12px;
@@ -62,7 +63,7 @@
 }
 
 .enquiry-input,
-.enquiry-textarea{
+.enquiry-textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid var(--primary-300);
@@ -72,7 +73,7 @@
   transition: all 0.3s ease;
 }
 .enquiry-select {
-    width: 35%;
+  width: 35%;
   padding: 10px;
   border: 1px solid var(--primary-300);
   border-radius: var(--radius-lg);
