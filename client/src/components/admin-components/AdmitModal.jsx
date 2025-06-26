@@ -237,7 +237,7 @@ export default function AdmitModal({ isOpen, onClose, patient }) {
               selected={visitForm.checkInTime ? new Date(visitForm.checkInTime) : null}
               onChange={(date) => setVisitForm({ ...visitForm, checkInTime: date?.toISOString() })}
               showTimeSelect
-              timeFormat="HH:mm"
+              timeFormat="HH:mm aa"
               timeIntervals={15}
               dateFormat="yyyy-MM-dd | HH:mm aa"
               placeholderText="Select Check In date and time"

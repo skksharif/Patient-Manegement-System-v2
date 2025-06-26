@@ -131,6 +131,10 @@ export default function Upcoming() {
       )
     );
 
+  if (statusTab === "Completed") {
+    filtered.reverse();
+  }
+
   return (
     <div className="upcoming-container">
       <h2 className="heading">Upcoming Registrations</h2>
