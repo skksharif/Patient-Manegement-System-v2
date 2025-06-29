@@ -73,25 +73,26 @@ export default function Checkedout() {
     <div className="checkedout-list">
       <div className="patients-header">
         <h2 className="patients-title">All Patients</h2>
+        <div className="search-section">
+          <input
+            type="text"
+            placeholder={`Search by ${searchBy}...`}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
+          <select
+            className="search-select"
+            value={searchBy}
+            onChange={(e) => setSearchBy(e.target.value)}
+          >
+            <option value="phone">Phone</option>
+            <option value="name">Name</option>
+            <option value="aadhar">Aadhar</option>
+          </select>
+        </div>
+
         <span className="patients-count">Total count : {visits.length}</span>
-      </div>
-      <div className="search-section">
-        <input
-          type="text"
-          placeholder={`Search by ${searchBy}...`}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-        <select
-          className="search-select"
-          value={searchBy}
-          onChange={(e) => setSearchBy(e.target.value)}
-        >
-          <option value="phone">Phone</option>
-          <option value="name">Name</option>
-          <option value="aadhar">Aadhar</option>
-        </select>
       </div>
 
       <div className="checkedout-container">

@@ -73,26 +73,25 @@ export default function AllActiveInpatients() {
     <div className="checkedin-list">
       <div className="patients-header">
         <h2 className="patients-title">All Patients</h2>
+        <div className="search-section">
+          <input
+            type="text"
+            placeholder={`Search by ${searchBy}...`}
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select
+            className="search-select"
+            value={searchBy}
+            onChange={(e) => setSearchBy(e.target.value)}
+          >
+            <option value="aadhar">Aadhar</option>
+            <option value="phone">Phone</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
         <span className="patients-count">Total count : {patients.length}</span>
-      </div>
-
-      <div className="search-section">
-        <input
-          type="text"
-          placeholder={`Search by ${searchBy}...`}
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="search-select"
-          value={searchBy}
-          onChange={(e) => setSearchBy(e.target.value)}
-        >
-          <option value="aadhar">Aadhar</option>
-          <option value="phone">Phone</option>
-          <option value="name">Name</option>
-        </select>
       </div>
 
       <div className="checkedin-container">

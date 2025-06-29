@@ -6,6 +6,31 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+.search-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0 !important;
+  flex-wrap: wrap;
+}
+.search-input {
+  margin: 10px 10px;
+  width: 320px;
+  font-size: 16px;
+  border: 1px solid var(--primary-300);
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: 0.3s;
+  padding: 10px;
+  background: white;
+}
+
+.search-input:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
+}
+
 
 /* Cards Container */
 .checkedout-container {
