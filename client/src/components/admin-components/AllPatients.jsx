@@ -38,14 +38,18 @@ export default function AllPatients() {
     const term = searchTerm.toLowerCase();
     if (searchBy === "phone") return patient.phone.toLowerCase().includes(term);
     if (searchBy === "name") return patient.name.toLowerCase().includes(term);
-    if (searchBy === "aadhar") return patient.aadharNo.toLowerCase().includes(term);
+    if (searchBy === "aadhar")
+      return patient.aadharNo.toLowerCase().includes(term);
 
     return false;
   });
 
   return (
     <div className="all-patients-container">
-      <h2 className="title">All Patients</h2>
+      <div className="patients-header">
+        <h2 className="patients-title">All Patients</h2>
+        <span className="patients-count">Total count : {patients.length}</span>
+      </div>
 
       <div className="search-section">
         <input
@@ -72,21 +76,28 @@ export default function AllPatients() {
         </div>
       ) : (
         <div className="patient-cards">
-          {(filteredPatients.length!=0) ? (filteredPatients.map((patient) => (
-            <div
-              key={patient._id}
-              className="patient-card"
-              onClick={() => navigate(`/admin-home/patient/${patient._id}`)}
-            >
-              <h3>{patient.name}</h3>
-              <p>
-                <strong>Phone:</strong> {patient.phone}
-              </p>
-              <p>
-                <strong>Aadhar:</strong> {(patient.aadharNo)?(patient.aadharNo):(<span>Not Set</span>)}
-              </p>
-            </div>
-          ))):(<span style={{ padding: "110px 0", color: "red" }}>No Records Found</span>)}
+          {filteredPatients.length != 0 ? (
+            filteredPatients.map((patient) => (
+              <div
+                key={patient._id}
+                className="patient-card"
+                onClick={() => navigate(`/admin-home/patient/${patient._id}`)}
+              >
+                <h3>{patient.name}</h3>
+                <p>
+                  <strong>Phone:</strong> {patient.phone}
+                </p>
+                <p>
+                  <strong>Aadhar:</strong>{" "}
+                  {patient.aadharNo ? patient.aadharNo : <span>Not Set</span>}
+                </p>
+              </div>
+            ))
+          ) : (
+            <span style={{ padding: "110px 0", color: "red" }}>
+              No Records Found
+            </span>
+          )}
         </div>
       )}
     </div>

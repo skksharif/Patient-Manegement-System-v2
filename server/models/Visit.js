@@ -20,7 +20,7 @@ const visitSchema = new mongoose.Schema({
 
   note: {
     type: String,
-    required: true,
+    required: false,
   },
 
   checkInTime: {

@@ -48,7 +48,7 @@ export default function AddPatient() {
         address: "",
       });
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to add patient");
+      toast.error(err.response?.data?.error +err.response?.data?.name);
     } finally {
       setLoading(false);
     }

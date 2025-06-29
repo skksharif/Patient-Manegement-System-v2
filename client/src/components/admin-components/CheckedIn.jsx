@@ -71,7 +71,10 @@ export default function AllActiveInpatients() {
 
   return (
     <div className="checkedin-list">
-      <h2>All Active In-Patients</h2>
+      <div className="patients-header">
+        <h2 className="patients-title">All Patients</h2>
+        <span className="patients-count">Total count : {patients.length}</span>
+      </div>
 
       <div className="search-section">
         <input
@@ -94,7 +97,9 @@ export default function AllActiveInpatients() {
 
       <div className="checkedin-container">
         {filteredPatients.length === 0 ? (
-          <span style={{ padding: "110px 0", color: "red" }}>No Active Patients</span>
+          <span style={{ padding: "110px 0", color: "red" }}>
+            No Active Patients
+          </span>
         ) : (
           filteredPatients.map((visit) => (
             <div

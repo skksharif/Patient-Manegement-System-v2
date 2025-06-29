@@ -23,9 +23,14 @@ const getDashboardInsights = async (req, res) => {
         $lte: new Date().setHours(23, 59, 59, 999),
       },
     });
+    const totalUpcoming = await Upcoming.countDocuments({
+      status: "Scheduled",
+    });
 
     const missedCount = await Upcoming.countDocuments({ status: "Missed" });
-    const completedUpcoming = await Upcoming.countDocuments({ status: "Completed" });
+    const completedUpcoming = await Upcoming.countDocuments({
+      status: "Completed",
+    });
 
     const visitsPerDay = await Visit.aggregate([
       {
@@ -46,6 +51,7 @@ const getDashboardInsights = async (req, res) => {
       opCount,
       ipCount,
       upcomingToday,
+      totalUpcoming,
       missedCount,
       completedUpcoming,
       visitsPerDay,

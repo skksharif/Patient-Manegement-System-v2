@@ -7,71 +7,6 @@
   overflow: hidden;
 }
 
-/* Heading */
-.checkedout-list h2 {
-  text-align: center;
-  color: var(--primary-700);
-  margin-bottom: 10px;
-  text-decoration: underline;
-  font-size: var(--font-size-3xl);
-  font-weight: 700;
-}
-
-.search-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.search-input {
-  margin: 10px 10px;
-  width: 320px;
-  font-size: 16px;
-  border: 1px solid var(--primary-300);
-  border-radius: var(--radius-lg);
-  outline: none;
-  transition: 0.3s;
-  padding: 10px;
-  background: white;
-}
-
-.search-input:focus {
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
-}
-
-.search-select {
-  padding: 8px 12px;
-  font-size: 1rem;
-  border: 1px solid var(--primary-300);
-  border-radius: var(--radius-lg);
-  background-color: #fff;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.search-select:focus {
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgb(75 117 60 / 0.1);
-}
-input[type="checkbox"] {
-  width: 30px;
-  padding:0;
-  margin: 0;
-}
-.checkbox-group label{
-  margin: 0;
-  padding: 0;
-}
-
-.checkbox-group{
-  display: flex;
-  justify-content: start;
-  align-items: center;
-}
 /* Cards Container */
 .checkedout-container {
   display: flex;
@@ -83,7 +18,7 @@ input[type="checkbox"] {
   max-height: 75vh;
   overflow-y: auto;
   border: 2px solid var(--primary-300);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl);
   background-color: rgba(255, 255, 255, 0.5);
   box-shadow: var(--shadow-md);
 }

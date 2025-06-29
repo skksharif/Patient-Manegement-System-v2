@@ -17,6 +17,8 @@ import {
   FaHospitalAlt,
   FaClipboardList,
 } from "react-icons/fa";
+import { IoIosPeople } from "react-icons/io";
+
 import BASE_URL from "../config";
 import "./Home.css";
 
@@ -40,7 +42,9 @@ export default function Home() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+      
         setStats(data);
+        console.log(stats)
       } catch (err) {
         console.error("Dashboard fetch failed", err);
       }
@@ -90,6 +94,11 @@ export default function Home() {
         <div className="stat-box olive">
           <FaClipboardList /> Today Bookings
           <span>{stats.upcomingToday}</span>
+        </div>
+        <div className="stat-box olive">
+          <IoIosPeople />
+          Total Bookings
+          <span>{stats.totalUpcoming}</span>
         </div>
       </div>
 

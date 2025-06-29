@@ -2,11 +2,24 @@ const Patient = require("../models/Patient");
 
 const createPatient = async (req, res) => {
   try {
+    const { phone } = req.body;
+
+    // Check if a patient with this phone number already exists
+    const existingPatient = await Patient.findOne({ phone });
+
+    if (existingPatient) {
+      return res.status(409).json({
+        error: `Patient with this phone number already exists with name `,
+        name: existingPatient.name,
+      });
+    }
+
+    // If not exists, create and save new patient
     const patient = new Patient(req.body);
     await patient.save();
+
     res.status(201).json(patient);
   } catch (error) {
-
     res.status(400).json({ error: error.message });
   }
 };
@@ -20,11 +33,9 @@ const getPatientById = async (req, res) => {
     }
     res.status(200).json(patient);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: "Fetching patient failed" });
   }
 };
-
-
 
 const getAllPatients = async (req, res) => {
   try {
@@ -53,7 +64,6 @@ const updatePatient = async (req, res) => {
 
 const  checkPatient =  async (req, res) => {
   const { phone } = req.query;
-  console.log(phone)
   if (!phone) {
     return res.status(400).json({ error: "Phone number is required" });
   }
@@ -66,7 +76,6 @@ const  checkPatient =  async (req, res) => {
       return res.status(200).json({ exists: false });
     }
   } catch (err) {
-    console.error("Error checking patient:", err);
     return res.status(500).json({ error: "Server error" });
   }
 };

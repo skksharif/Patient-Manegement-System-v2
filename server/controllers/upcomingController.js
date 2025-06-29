@@ -18,7 +18,6 @@ exports.registerUpcomingPatient = async (req, res) => {
   res.status(201).json(patient);
 };
 
-
 // 2. Get All
 exports.getAllUpcomingPatients = async (req, res) => {
   const patients = await UpcomingPatient.find().sort({ plannedVisitDate: 1 });

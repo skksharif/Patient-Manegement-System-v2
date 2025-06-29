@@ -5,13 +5,31 @@
   overflow-y: auto;
 }
 
-.title {
+.patients-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 24px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.patients-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.patients-count {
+  font-size: 1.1rem;
+  font-weight: 500;
+  background-color: #84d000;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  min-width: 40px;
   text-align: center;
-  color: var(--primary-700);
-  margin-bottom: 10px;
-  text-decoration: underline;
-  font-size: var(--font-size-3xl);
-  font-weight: 700;
 }
 
 .patient-cards {

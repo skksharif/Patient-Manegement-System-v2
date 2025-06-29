@@ -71,8 +71,10 @@ export default function Checkedout() {
 
   return (
     <div className="checkedout-list">
-      <h2>Discharded Patients Records</h2>
-
+      <div className="patients-header">
+        <h2 className="patients-title">All Patients</h2>
+        <span className="patients-count">Total count : {visits.length}</span>
+      </div>
       <div className="search-section">
         <input
           type="text"
