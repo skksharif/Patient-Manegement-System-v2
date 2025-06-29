@@ -15,6 +15,7 @@
   border-radius: 8px;
   position: sticky;
   top: 0;
+  z-index: 900;
 }
 
 .patients-title {
