@@ -3,7 +3,13 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 const cors = require('cors');
-app.use(cors());
+// OR allow specific origin:
+app.use(cors({
+  origin: 'https://www.adminpa.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 const connectDB = require('./config/db');
 connectDB();
 
