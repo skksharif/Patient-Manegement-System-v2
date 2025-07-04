@@ -29,14 +29,6 @@ const createVisit = async (req, res) => {
       if (activeIP)
         return res.status(400).json({ error: "Patient is already admitted." });
 
-      const roomConflict = await Visit.findOne({
-        roomNo,
-        type: "IP",
-        checkOutTime: null,
-      });
-      if (roomConflict)
-        return res.status(400).json({ error: "Room is already occupied." });
-
       const newVisit = new Visit({
         patientId,
         type,
